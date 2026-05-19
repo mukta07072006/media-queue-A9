@@ -3,15 +3,19 @@
 import React, { useState, useEffect, use } from 'react';
 import { FiCalendar, FiClock, FiLayers, FiMapPin, FiPhone, FiUser, FiX, FiDollarSign, FiBook } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { error } from 'better-auth/api';
+import { authClient } from '@/lib/auth-client';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4500';
 
-export default async function TutorDetailsPage({ params }) {
+export default function TutorDetailsPage({ params }) {
   const { id: tutorId } = use(params);
-    
 
-        console.log(session)
+
+        const { data: session, isPending, error } = authClient.useSession();
+
+        const {user} = session || {};
+        console.log(user.id)
+
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,6 +84,7 @@ export default async function TutorDetailsPage({ params }) {
         subject: tutor.subject,
         studentName,
         studentPhone,
+        userId: user.id,
         bookedAt: new Date().toISOString(),
       };
 
