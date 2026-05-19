@@ -11,10 +11,10 @@ export default function TutorDetailsPage({ params }) {
   const { id: tutorId } = use(params);
 
 
-        const { data: session, isPending, error } = authClient.useSession();
+  const { data: session, isPending, error } = authClient.useSession();
 
-        const {user} = session || {};
-        console.log(user.id)
+  const { user } = session || {};
+  console.log(user?.id)
 
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,17 +53,17 @@ export default function TutorDetailsPage({ params }) {
 
 
   const handleOpenModal = () => {
-    console.log("clicked");
-    console.log(tutor.totalSlots)
-    if (tutor.totalSlots === 0) {
+    // console.log("clicked");
+    // console.log(tutor)
+    if (tutor.totalSlot <= 0) {
       toast.error('No available slots left for this tutor.');
       return;
     }
-    
+
     const today = new Date();
-    console.log(today)
+    // console.log(today)
     const sessionDate = new Date(tutor.sessionEndDate);
-    console.log(sessionDate)
+    // console.log(sessionDate)
     if (today > sessionDate) {
       toast.error('Booking is not available yet for this tutor.');
       console.log("error: Booking not available yet")
@@ -81,7 +81,13 @@ export default function TutorDetailsPage({ params }) {
       const payload = {
         tutorId: tutor._id,
         tutorName: tutor.tutorName,
+        tutorImage: tutor.tutorImage,
+        hourlyFee: tutor.hourlyFee,
+        location: tutor.location,
+        teachingMethod: tutor.teachingMethod,
+        availableTime: tutor.availableTime,
         subject: tutor.subject,
+        studentId: user?.id,
         studentName,
         studentPhone,
         userId: user.id,
@@ -92,7 +98,7 @@ export default function TutorDetailsPage({ params }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -100,7 +106,7 @@ export default function TutorDetailsPage({ params }) {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Booking failed.');
 
-     
+
       setTutor(prev => ({ ...prev, totalSlots: prev.totalSlots - 1 }));
       toast.success('Session booked successfully!');
       setIsModalOpen(false);
@@ -117,9 +123,9 @@ export default function TutorDetailsPage({ params }) {
     { icon: <FiCalendar className="text-sky-500" />, label: 'Session Starts', value: tutor.sessionStartDate ? new Date(tutor.sessionStartDate).toLocaleDateString() : 'N/A' },
     { icon: <FiClock className="text-sky-400" />, label: 'Available Time', value: tutor.availableTime || 'N/A' },
     { icon: <FiDollarSign className="text-emerald-500" />, label: 'Hourly Fee', value: tutor.hourlyFee ? `$${tutor.hourlyFee}` : 'N/A' },
-    { icon: <FiBook className="text-violet-500" />, label: 'Teaching Mode', value: tutor.teachingMode || 'N/A' },
+    { icon: <FiBook className="text-violet-500" />, label: 'Teaching Mode', value: tutor.teachingMethod || 'N/A' },
     { icon: <FiMapPin className="text-rose-400" />, label: 'Location', value: tutor.location || 'N/A' },
-    { icon: <FiLayers className="text-amber-500" />, label: 'Available Slots', value: `${tutor.totalSlots ?? 0} slots` },
+    { icon: <FiLayers className="text-amber-500" />, label: 'Available Slots', value: `${tutor.totalSlot ?? 0} slots` },
   ];
 
   return (
@@ -160,7 +166,7 @@ export default function TutorDetailsPage({ params }) {
                 onClick={handleOpenModal}
                 className="px-7 py-3 bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-bold rounded-xl shadow-lg shadow-sky-200 transition-all duration-200 active:scale-95 whitespace-nowrap"
               >
-                Book 1-on-1 Session
+                Book Session
               </button>
             </div>
 
@@ -221,7 +227,7 @@ export default function TutorDetailsPage({ params }) {
               </div>
               <div className="flex justify-between">
                 <span>Slots Left</span>
-                <span className="font-bold text-emerald-600">{tutor.totalSlots ?? 0}</span>
+                <span className="font-bold text-emerald-600">{tutor.totalSlot ?? 0}</span>
               </div>
             </div>
 

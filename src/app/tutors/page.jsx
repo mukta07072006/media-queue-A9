@@ -31,7 +31,7 @@ const AllTutorsPage = () => {
   return (
     <main className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Page Banner / Header */}
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-sky-950 text-white p-8 md:p-12 shadow-xl mb-12">
           <div className="relative z-10 max-w-2xl space-y-3">
@@ -45,7 +45,7 @@ const AllTutorsPage = () => {
               Connect with certified experts, university mentors, and professional field industry veterans ready to guide you 1-on-1.
             </p>
           </div>
-          
+
           {/* Geometric decorative background overlay elements */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl -z-0 pointer-events-none" />
           <div className="absolute -bottom-10 right-20 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl -z-0 pointer-events-none" />
@@ -105,7 +105,7 @@ const AllTutorsPage = () => {
                       />
                     ) : (
                       <div className="w-14 h-14 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-xl font-bold border border-sky-100">
-                        {tutor.tutorName?.charAt(0).toUpperCase()}
+                        {tutor.tutorName?.charAt(0).toUpperCase() || "No name provided"}
                       </div>
                     )}
                     <div>
@@ -158,7 +158,7 @@ const AllTutorsPage = () => {
                   )}
                 </div>
 
-                
+
                 <Link
                   href={`/tutors/${tutor._id}`}
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-sky-600 bg-sky-50/50 hover:bg-sky-500 hover:text-white rounded-xl transition-all duration-200 group-hover:shadow-md group-hover:shadow-sky-100"
