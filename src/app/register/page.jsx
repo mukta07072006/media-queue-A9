@@ -1,10 +1,11 @@
 'use client';
 
 import { authClient } from '@/lib/auth-client';
-
-import Image from 'next/image';
+import { Button } from '@heroui/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import React from 'react';
+import { FcGoogle } from "react-icons/fc";
 
 const Signup = () => {
 
@@ -12,29 +13,32 @@ const Signup = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       
-      const formData = new FormData(e.target);
-      const email = formData.get('email');
-      const password = formData.get('password');
-      const name = formData.get('name');
-      const photoUrl = formData.get('photoUrl');
+      const formData = new FormData(e.currentTarget);
+      console.log(formData)
+      const user = Object.fromEntries(formData.entries());
+      
+      console.log(user)
   
   
-      const userData = {
-        email,
-        password,
-        name,
-        photoUrl
-      };
+      
   
-      const {data, error} = await authClient.signUp.email(userData , 
-        {
-          onSuccess: (ctx) => {
-            redirect('/login')
-          }
-        }
-      );
+      const {data, error} = await authClient.signUp.email({
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        photoUrl: user.photoUrl
+      })
+      
+      if(data) {
+        redirect('/login')
+      }
   
-  
+    }
+
+    const handleGoogleSignIn = async () => {
+        await authClient.signIn.social({
+        provider: "google",
+      });
     }
   
 
@@ -61,6 +65,7 @@ const Signup = () => {
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Full Name</label>
               <input
                 type="text"
+                name='name'
                 required
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
                 placeholder="John Doe"
@@ -71,6 +76,7 @@ const Signup = () => {
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Photo URL</label>
               <input
                 type="url"
+                name='photoUrl'
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
                 placeholder="https://example.com/photo.jpg"
               />
@@ -80,6 +86,7 @@ const Signup = () => {
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
               <input
                 type="email"
+                name='email'
                 required
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
                 placeholder="you@example.com"
@@ -90,6 +97,7 @@ const Signup = () => {
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
               <input
                 type="password"
+                name='password'
                 required
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
                 placeholder="At least 8 characters"
@@ -109,6 +117,10 @@ const Signup = () => {
               Create Account
             </button>
           </form>
+
+          <Button className={'mt-2 w-full rounded-lg'} variant="outline" onClick={handleGoogleSignIn}><FcGoogle /> 
+            Sign in with Google
+          </Button>
 
           {/* Footer Link */}
           <div className="mt-6 pt-5 border-t border-slate-100 text-center">
