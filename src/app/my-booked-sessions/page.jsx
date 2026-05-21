@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { authClient } from "@/lib/auth-client";
 
+
+
 export default function MyBookingsPage() {
 
     const { data: session, isPending, error } = authClient.useSession();
@@ -35,9 +37,34 @@ export default function MyBookingsPage() {
     }, [user?.id])
 
     console.log(bookings)
-
     
 
+    
+    const handleBookings = async (bookingId)=>{
+        try{
+            const res = await fetch(`http://localhost:4500/api/bookings/${bookingId}`,{
+                method: 'PUT',
+                headers:{
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({status: 'Cancelled'})
+            })
+            const data = await res.json();
+            if(res.ok){
+                setBookings((prevBookings) =>
+                    prevBookings.map((booking) =>
+                        String(booking._id) === String(bookingId) ? { ...booking, status: 'Cancelled' } : booking
+                    )
+                );
+            }
+            if(!res.ok){
+                throw new Error(data.message || 'Failed to cancel the booking. Please try again later.')
+            }
+        }
+        catch(err){
+            toast.error('Failed to cancel the booking. Please try again later.')
+        }
+    }
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -52,7 +79,7 @@ export default function MyBookingsPage() {
   );
 
     return (
-        <div className="max-w-full min-w-full mx-auto my-10 px-10 text-slate-900">
+        <div className="max-w-full min-h-[70vh] min-w-full mx-auto my-10 px-10 text-slate-900">
             {/* Header Panel */}
             <div className="mb-8 border-b border-slate-100 pb-5">
                 <h1 className="text-3xl font-extrabold tracking-tight">My Booked Sessions</h1>
@@ -119,14 +146,14 @@ export default function MyBookingsPage() {
                         {/* Practical Action Footer Container */}
                         <div className="pt-2 flex gap-3">
                             <button
-                                onClick={() => handleCancelBooking(booking._id)}
+                                onClick={() => handleBookings(booking._id)}
                                 className="flex-1 py-2 border border-slate-200 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 font-semibold rounded-xl text-xs transition"
                             >
                                 Cancel Booking
                             </button>
 
                             <button
-                                onClick={() => alert('Practice Tip: Route this button to your classroom dashboard or messaging channels.')}
+                                onClick={() => toast.error('Feature not implemented yet. Please check back later!')}
                                 className="flex-1 py-2 bg-slate-900 text-white font-semibold rounded-xl text-xs hover:bg-slate-800 transition shadow-sm"
                             >
                                 Enter Classroom

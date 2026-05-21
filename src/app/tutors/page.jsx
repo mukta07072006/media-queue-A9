@@ -4,15 +4,27 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiArrowRight, FiCalendar, FiClock, FiUser, FiBookOpen } from 'react-icons/fi';
 
+
+
 const AllTutorsPage = () => {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const response = await fetch('http://localhost:4500/api/tutors');
+        setLoading(true);
+        const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (startDate) params.append('startDate', startDate);
+                if (endDate) params.append('endDate', endDate);
+
+
+        const response = await fetch(`http://localhost:4500/api/tutors?${params.toString()}`);
         if (!response.ok) {
           throw new Error('Failed to fetch tutor profiles from the server.');
         }
@@ -25,11 +37,29 @@ const AllTutorsPage = () => {
       }
     };
 
-    fetchTutors();
-  }, []);
+
+    const delayDebounceFn = setTimeout(() => {
+            fetchTutors();
+        }, 300); // Waits 300ms after you stop typing to execute
+
+        return () => clearTimeout(delayDebounceFn);
+
+  }, [search, startDate, endDate]);
+
+
+  const handleClearFilters = () => {
+        setSearch('');
+        setStartDate('');
+        setEndDate('');
+    };
+
+
+  
 
   return (
     <main className="min-h-screen bg-white py-12">
+            
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Page Banner / Header */}
@@ -57,6 +87,51 @@ const AllTutorsPage = () => {
             {error}
           </div>
         )}
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5  mb-10 grid grid-cols-1 md:grid-cols-4 gap-4 items-end text-xs">
+                
+                <div className="flex flex-col gap-1.5">
+                    <label className="font-bold text-slate-700 uppercase tracking-wider">Search Name</label>
+                    <input 
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="e.g. Rahat Khan..."
+                        className="w-full px-4 py-2.5 text-sm bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-950 transition text-slate-900"
+                    />
+                </div>
+
+                
+                <div className="flex flex-col gap-1.5">
+                    <label className="font-bold text-slate-700 uppercase tracking-wider">Available From</label>
+                    <input 
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-4 py-2.5 text-sm bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-950 transition text-slate-900"
+                    />
+                </div>
+
+            
+                <div className="flex flex-col gap-1.5">
+                    <label className="font-bold text-slate-700 uppercase tracking-wider">Available Until</label>
+                    <input 
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-4 py-2.5 text-sm bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-950 transition text-slate-900"
+                    />
+                </div>
+
+                <div>
+                    <button
+                        onClick={handleClearFilters}
+                        className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-center"
+                    >
+                        Reset All Filters
+                    </button>
+                </div>
+            </div>
 
         {/* Loading Cards Grid View State */}
         {loading ? (

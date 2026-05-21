@@ -5,6 +5,8 @@ import { FiCalendar, FiClock, FiLayers, FiMapPin, FiPhone, FiUser, FiX, FiDollar
 import toast from 'react-hot-toast';
 import { authClient } from '@/lib/auth-client';
 
+
+
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4500';
 
 export default function TutorDetailsPage({ params }) {
@@ -61,9 +63,9 @@ export default function TutorDetailsPage({ params }) {
     }
 
     const today = new Date();
-    // console.log(today)
+
     const sessionDate = new Date(tutor.sessionEndDate);
-    // console.log(sessionDate)
+
     if (today > sessionDate) {
       toast.error('Booking is not available yet for this tutor.');
       console.log("error: Booking not available yet")
@@ -89,12 +91,13 @@ export default function TutorDetailsPage({ params }) {
         subject: tutor.subject,
         studentId: user?.id,
         studentName,
+        status: 'Confirmed',
         studentPhone,
         userId: user.id,
         bookedAt: new Date().toISOString(),
       };
 
-      const res = await fetch(`${API}/api/bookings`, {
+      const res = await fetch(`${API}/api/bookings?tutorId=${tutor._id}&userId=${user?.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

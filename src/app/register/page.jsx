@@ -7,6 +7,8 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import { FcGoogle } from "react-icons/fc";
 
+
+
 const Signup = () => {
 
 
