@@ -1,4 +1,6 @@
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4500';
+import { API_URL } from '@/lib/api';
+
+const API = API_URL;
 
 export async function generateMetadata({ params }) {
   const { id } = params;

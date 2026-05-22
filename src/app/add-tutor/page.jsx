@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authClient } from "@/lib/auth-client"; // Adjust path to your auth client
 import toast from 'react-hot-toast';
+import { API_URL } from '@/lib/api';
 
 export default function AddTutorPage() {
     const router = useRouter();
@@ -72,7 +73,7 @@ export default function AddTutorPage() {
 
         try {
 
-            const response = await fetch('http://localhost:4500/api/tutors', {
+            const response = await fetch(`${API_URL}/api/tutors`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

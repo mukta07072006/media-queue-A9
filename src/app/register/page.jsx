@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { FcGoogle } from "react-icons/fc";
+import { API_URL } from '@/lib/api';
 
 
 
@@ -46,7 +47,7 @@ const Signup = () => {
         class: user.class
       }
 
-      const res = fetch('http://localhost:4500/api/auth/user', {
+      const res = fetch(`${API_URL}/api/auth/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

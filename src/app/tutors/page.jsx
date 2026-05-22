@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiArrowRight, FiCalendar, FiClock, FiUser, FiBookOpen } from 'react-icons/fi';
+import { API_URL } from '@/lib/api';
 
 
 
@@ -24,7 +25,7 @@ const AllTutorsPage = () => {
                 if (endDate) params.append('endDate', endDate);
 
 
-        const response = await fetch(`http://localhost:4500/api/tutors?${params.toString()}`);
+        const response = await fetch(`${API_URL}/api/tutors?${params.toString()}`);
         if (!response.ok) {
           throw new Error('Failed to fetch tutor profiles from the server.');
         }

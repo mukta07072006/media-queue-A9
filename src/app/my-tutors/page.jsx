@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { authClient } from "@/lib/auth-client";
+import { API_URL } from '@/lib/api';
 import { redirect } from 'next/navigation';
 import { FaLocationArrow } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -27,7 +28,7 @@ export default function MyTutorsPage() {
 
             if (!user?.id) return;
         try{
-            const response = await fetch(`http://localhost:4500/api/tutors/mine?userId=${user?.id}`);
+            const response = await fetch(`${API_URL}/api/tutors/mine?userId=${user?.id}`);
             const data = await response.json();
             setMyTutors(data);
             console.log(myTutors)
@@ -46,7 +47,7 @@ export default function MyTutorsPage() {
 
     const deleteTutor = async (tutorId) => {
         try{
-            const response = await fetch(`http://localhost:4500/api/tutors/mine?tutorId=${tutorId}`,{
+            const response = await fetch(`${API_URL}/api/tutors/mine?tutorId=${tutorId}`,{
                 method: 'DELETE'
             })
             const data = await response.json();
@@ -298,7 +299,7 @@ console.log(myTutors)
 
                             try {
                                 const response = await fetch(
-                                    `http://localhost:4500/api/tutors/mine?tutorId=${editingTutor._id}`,
+                                    `${API_URL}/api/tutors/mine?tutorId=${editingTutor._id}`,
                                     {
                                         method: "PUT",
                                         headers: {

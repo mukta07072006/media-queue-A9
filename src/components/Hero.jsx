@@ -97,7 +97,7 @@ const Hero = () => {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
               {/* Left Column */}
               <div className="lg:col-span-6 space-y-6 text-left order-2 lg:order-1">

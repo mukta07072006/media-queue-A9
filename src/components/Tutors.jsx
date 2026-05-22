@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiArrowRight, FiCalendar, FiClock, FiUser } from 'react-icons/fi';
+import { API_URL } from '@/lib/api';
 
 const AvailableTutors = () => {
   const [tutors, setTutors] = useState([]);
@@ -12,7 +13,7 @@ const AvailableTutors = () => {
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const response = await fetch('http://localhost:4500/api/tutors/home');
+        const response = await fetch(`${API_URL}/api/tutors/home`);
         if (!response.ok) {
           throw new Error('Failed to fetch tutor data from the server.');
         }
@@ -29,7 +30,7 @@ const AvailableTutors = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-slate-50/50 min-h-screen w-full">
+    <section className="pb-16 bg-slate-50/50 min-h-screen w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

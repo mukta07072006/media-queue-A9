@@ -6,6 +6,7 @@ import {
   Video, MapPinCheck, Clock, Calendar, Phone, Sparkles,
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { API_URL } from '@/lib/api';
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('sessions');
@@ -18,14 +19,14 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (!userd?.email) return;
-    fetch(`http://localhost:4500/api/auth/user/${userd.email}`)
+    fetch(`${API_URL}/api/auth/user/${userd.email}`)
       .then(r => r.json())
       .then(d => setUserProfile(d?.[0]));
   }, [session]);
 
   useEffect(() => {
     if (!userd?.id) return;
-    fetch(`http://localhost:4500/api/bookings/mine?studentId=${userd.id}`)
+    fetch(`${API_URL}/api/bookings/mine?studentId=${userd.id}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => setBookings(d))
       .catch(console.error)
@@ -154,7 +155,7 @@ export default function UserProfile() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {bookings.map(b => <BookingCard key={b.studentId} booking={b} />)}
+              {bookings.map(b => <BookingCard key={b._id} booking={b} />)}
             </div>
           )
         )}

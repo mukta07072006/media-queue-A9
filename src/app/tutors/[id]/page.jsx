@@ -4,10 +4,11 @@ import React, { useState, useEffect, use } from 'react';
 import { FiCalendar, FiClock, FiLayers, FiMapPin, FiPhone, FiUser, FiX, FiDollarSign, FiBook } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { authClient } from '@/lib/auth-client';
+import { API_URL } from '@/lib/api';
 
 
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4500';
+const API = API_URL;
 
 export default function TutorDetailsPage({ params }) {
   const { id: tutorId } = use(params);
@@ -24,6 +25,9 @@ export default function TutorDetailsPage({ params }) {
   const [studentName, setStudentName] = useState('');
   const [studentPhone, setStudentPhone] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
+
+
+  
 
 
 
@@ -120,7 +124,12 @@ export default function TutorDetailsPage({ params }) {
           Authorization: `Bearer ${tokenData.token}`,
         },
         body: JSON.stringify(payload),
+        
       });
+
+
+      console.log(tutor);
+      console.log(payload);
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Booking failed.');
@@ -139,7 +148,7 @@ export default function TutorDetailsPage({ params }) {
   };
 
   const infoItems = [
-    { icon: <FiCalendar className="text-sky-500" />, label: 'Session Starts', value: tutor.sessionStartDate ? new Date(tutor.sessionStartDate).toLocaleDateString() : 'N/A' },
+    { icon: <FiCalendar className="text-sky-500" />, label: 'Session Ends', value: tutor.sessionEndDate ? new Date(tutor.sessionEndDate).toLocaleDateString() : 'N/A' },
     { icon: <FiClock className="text-sky-400" />, label: 'Available Time', value: tutor.availableTime || 'N/A' },
     { icon: <FiDollarSign className="text-emerald-500" />, label: 'Hourly Fee', value: tutor.hourlyFee ? `$${tutor.hourlyFee}` : 'N/A' },
     { icon: <FiBook className="text-violet-500" />, label: 'Teaching Mode', value: tutor.teachingMethod || 'N/A' },
@@ -222,17 +231,21 @@ export default function TutorDetailsPage({ params }) {
         <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-8 shadow-[0_10px_40px_rgba(96,165,250,0.08)]">
 
           <h3 className="text-lg font-bold text-slate-700 mb-6">
-            Specializes in...
+            Information
           </h3>
 
           <div className="flex flex-wrap gap-4">
 
             {infoItems.map((item) => (
+              
               <div
                 key={item.label}
-                className="px-5 py-3 rounded-2xl bg-[#f5f9ff] border border-sky-100 text-slate-600 font-medium hover:-translate-y-1 transition-all shadow-sm"
+                className="px-5 py-3 rounded-2xl  text-slate-600 font-medium hover:-translate-y-1 transition-all shadow-sm"
               >
+                
+                
                 <div className="flex items-center gap-2">
+                  
                   <span className="text-sky-400">
                     {item.icon}
                   </span>
@@ -240,7 +253,9 @@ export default function TutorDetailsPage({ params }) {
                   <span>
                     {item.value}
                   </span>
+
                 </div>
+                
               </div>
             ))}
 

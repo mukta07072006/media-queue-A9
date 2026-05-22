@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { authClient } from "@/lib/auth-client";
+import { API_URL } from '@/lib/api';
 
 
 
@@ -19,7 +20,7 @@ export default function MyBookingsPage() {
     useEffect(() => {
         const fetchBookings = async () => {
             try {
-                const res = await fetch(`http://localhost:4500/api/bookings/mine?studentId=${user?.id}`)
+                const res = await fetch(`${API_URL}/api/bookings/mine?studentId=${user?.id}`)
                 if (!res.ok) {
                     throw new Error('Failed to fetch bookings from the server.');
                 }
@@ -42,7 +43,7 @@ export default function MyBookingsPage() {
     
     const handleBookings = async (bookingId)=>{
         try{
-            const res = await fetch(`http://localhost:4500/api/bookings/${bookingId}`,{
+            const res = await fetch(`${API_URL}/api/bookings/${bookingId}`,{
                 method: 'PUT',
                 headers:{
                     'content-type': 'application/json'
