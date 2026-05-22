@@ -79,89 +79,175 @@ export default function MyBookingsPage() {
   );
 
     return (
-        <div className="max-w-full min-h-[70vh] min-w-full mx-auto my-10 px-10 text-slate-900">
-            {/* Header Panel */}
-            <div className="mb-8 border-b border-slate-100 pb-5">
-                <h1 className="text-3xl font-extrabold tracking-tight">My Booked Sessions</h1>
-                <p className="text-slate-500 text-sm mt-1">
-                    Review your reserved scheduling periods, tutor coordinates, and classroom methods.
-                </p>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 py-8 min-h-screen">
+    {/* Header */}
+    <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            My Booked Sessions
+        </h1>
 
+        <p className="text-sm text-slate-500 mt-2 max-w-2xl">
+            Review your reserved scheduling periods, tutor details, and classroom methods.
+        </p>
+    </div>
 
-            {/* Grid Layout Container */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Replace sampleBookings.map with your live state variable when fetching is ready */}
-                {bookings.map((booking) => (
-                    <div
-                        key={booking._id}
-                        className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
-                    >
-                        <div>
-                            {/* Tutor Header Profile Section */}
-                            <div className="flex items-start gap-4 mb-4">
-                                <img
-                                    src={booking.tutorImage}
-                                    alt={booking.tutorName}
-                                    className="w-14 h-14 rounded-xl object-cover bg-slate-100"
-                                />
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <h3 className="text-base font-bold text-slate-900 truncate">{booking.tutorName}</h3>
-                                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${booking.status === 'Confirmed'
-                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                            : 'bg-amber-50 text-amber-700 border-amber-100'
-                                            }`}>
-                                            {booking.status}
-                                        </span>
+    {/* Empty State */}
+    {bookings.length === 0 ? (
+        <div className="bg-white border border-slate-200 rounded-3xl p-10 text-center shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-800">
+                No bookings found
+            </h2>
+
+            <p className="text-sm text-slate-500 mt-2">
+                Your booked sessions will appear here.
+            </p>
+        </div>
+    ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {bookings.map((booking) => (
+                <div
+                    key={booking._id}
+                    className="group bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                >
+                    {/* Top Content */}
+                    <div>
+                        {/* Tutor Info */}
+                        <div className="flex items-start gap-4">
+                            <img
+                                src={
+                                    booking?.tutorImage ||
+                                    "https://i.ibb.co/4pDNDk1/avatar.png"
+                                }
+                                alt={booking?.tutorName || "Tutor"}
+                                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 bg-slate-100 shrink-0"
+                            />
+
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <h3 className="text-base font-bold text-slate-900 truncate">
+                                            {booking?.tutorName || "Unknown Tutor"}
+                                        </h3>
+
+                                        <p className="text-sm text-slate-600 truncate mt-1">
+                                            {booking?.subject || "No Subject"}
+                                        </p>
                                     </div>
-                                    <p className="text-sm font-semibold text-slate-600 truncate mt-0.5">{booking.subject}</p>
-                                    <p className="text-xs text-slate-400 mt-0.5">{booking.location}</p>
-                                </div>
-                            </div>
 
-                            {/* Booking Specifications Info List */}
-                            <div className="space-y-2 border-t border-b border-slate-50 py-3 my-3 text-xs">
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400 font-medium">Teaching Setup:</span>
-                                    <span className="text-slate-700 font-semibold">{booking.teachingMethod}</span>
+                                    <span
+                                        className={`shrink-0 text-[11px] font-semibold px-3 py-1 rounded-full border ${
+                                            booking?.status === "Confirmed"
+                                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                                                : booking?.status === "Pending"
+                                                ? "bg-amber-50 text-amber-700 border-amber-100"
+                                                : "bg-red-50 text-red-700 border-red-100"
+                                        }`}
+                                    >
+                                        {booking?.status || "Pending"}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400 font-medium">Reserved Slots:</span>
-                                    <span className="text-slate-700 font-semibold">1 Slot</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400 font-medium">Rate Apportionment:</span>
-                                    <span className="text-slate-900 font-bold">{booking.hourlyFee} BDT / hr</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400 font-medium">Transaction Date:</span>
-                                    <span className="text-slate-500 text-[11px] font-medium truncate max-w-[220px]">
-                                        {booking.bookedAt ? new Date(booking.bookedAt).toLocaleString() : 'N/A'}
+
+                                <div className="flex items-center gap-1 mt-2 text-xs text-slate-400">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                        />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                    </svg>
+
+                                    <span className="truncate">
+                                        {booking?.location || "Location unavailable"}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Practical Action Footer Container */}
-                        <div className="pt-2 flex gap-3">
-                            <button
-                                onClick={() => handleBookings(booking._id)}
-                                className="flex-1 py-2 border border-slate-200 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-100 font-semibold rounded-xl text-xs transition"
-                            >
-                                Cancel Booking
-                            </button>
+                        {/* Info Section */}
+                        <div className="mt-5 space-y-3 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-slate-500">
+                                    Teaching Setup
+                                </span>
 
-                            <button
-                                onClick={() => toast.error('Feature not implemented yet. Please check back later!')}
-                                className="flex-1 py-2 bg-slate-900 text-white font-semibold rounded-xl text-xs hover:bg-slate-800 transition shadow-sm"
-                            >
-                                Enter Classroom
-                            </button>
+                                <span className="text-sm font-semibold text-slate-800 text-right">
+                                    {booking?.teachingMethod || "N/A"}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-slate-500">
+                                    Reserved Slots
+                                </span>
+
+                                <span className="text-sm font-semibold text-slate-800">
+                                    1 Slot
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-3">
+                                <span className="text-sm text-slate-500">
+                                    Hourly Rate
+                                </span>
+
+                                <span className="text-sm font-bold text-slate-900">
+                                    {booking?.hourlyFee || 0} BDT/hr
+                                </span>
+                            </div>
+
+                            <div className="flex items-start justify-between gap-3">
+                                <span className="text-sm text-slate-500 shrink-0">
+                                    Transaction Date
+                                </span>
+
+                                <span className="text-xs text-slate-600 text-right break-words">
+                                    {booking?.bookedAt
+                                        ? new Date(
+                                              booking.bookedAt
+                                          ).toLocaleString()
+                                        : "N/A"}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                ))}
-            </div>
+
+                    {/* Footer Buttons */}
+                    <div className="grid grid-cols-2 gap-3 mt-6">
+                        <button
+                            onClick={() => handleBookings(booking._id)}
+                            className="w-full py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200 active:scale-[0.98]"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            onClick={() =>
+                                toast.error(
+                                    "Feature not implemented yet. Please check back later!"
+                                )
+                            }
+                            className="w-full py-3 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-all duration-200 active:scale-[0.98] shadow-sm"
+                        >
+                            Enter Class
+                        </button>
+                    </div>
+                </div>
+            ))}
         </div>
+    )}
+</div>
     );
 }

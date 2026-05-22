@@ -12,6 +12,9 @@ import { FcGoogle } from "react-icons/fc";
 const Signup = () => {
 
 
+
+
+
     const handleSubmit = async (e) => {
       e.preventDefault();
       
@@ -28,10 +31,32 @@ const Signup = () => {
         email: user.email,
         password: user.password,
         name: user.name,
+        address: user.address,
+        institution: user.institution,
+        class: user.class,
         photoUrl: user.photoUrl
       })
-      
-      if(data) {
+
+
+      const profileData = {
+        name: user.name,
+        email: user.email,
+        address: user.address,
+        institution: user.institution,
+        class: user.class
+      }
+
+      const res = fetch('http://localhost:4500/api/auth/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData)
+      });
+  
+
+
+      if(res) {
         redirect('/login')
       }
   
@@ -71,6 +96,36 @@ const Signup = () => {
                 required
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
                 placeholder="John Doe"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Address</label>
+              <input
+                type="text"
+                name='address'
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
+                placeholder="123 Main St"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Institution</label>
+              <input
+                type="text"
+                name='institution'
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
+                placeholder="University of Chittagong"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Class</label>
+              <input
+                type="text"
+                name='class'
+                required
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100 transition-all duration-200"
+                placeholder="10th Grade"
               />
             </div>
 

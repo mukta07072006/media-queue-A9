@@ -16,7 +16,7 @@ export default function TutorDetailsPage({ params }) {
   const { data: session, isPending, error } = authClient.useSession();
 
   const { user } = session || {};
-  console.log(user?.id)
+  // console.log(user?.id)
 
   const [tutor, setTutor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,8 +25,16 @@ export default function TutorDetailsPage({ params }) {
   const [studentPhone, setStudentPhone] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
 
+
+
+
+
+  
+  
+
   useEffect(() => {
     const fetchTutor = async () => {
+      
       try {
         const res = await fetch(`${API}/api/tutors/${tutorId}`);
         const data = await res.json();
@@ -40,6 +48,7 @@ export default function TutorDetailsPage({ params }) {
     };
     fetchTutor();
   }, [tutorId]);
+
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -75,11 +84,18 @@ export default function TutorDetailsPage({ params }) {
   };
 
   const handleConfirmBooking = async (e) => {
+    
     e.preventDefault();
+
+      const {data: tokenData} =await authClient.token();
+  console.log("Token data:", tokenData);
+
     setBookingLoading(true);
 
+    
+
     try {
-      const token = localStorage.getItem('token');
+      
       const payload = {
         tutorId: tutor._id,
         tutorName: tutor.tutorName,
@@ -101,7 +117,7 @@ export default function TutorDetailsPage({ params }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${tokenData.token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -132,154 +148,233 @@ export default function TutorDetailsPage({ params }) {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-[#f7fbff] px-6 lg:px-14 py-12 overflow-hidden relative">
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+  {/* background blobs */}
+  <div className="absolute top-0 left-0 w-72 h-72 bg-sky-200/30 blur-3xl rounded-full" />
+  <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-100/40 blur-3xl rounded-full" />
 
-          {/* Banner */}
-          <div className="h-44 bg-gradient-to-r from-sky-400 to-blue-600" />
+  <div className="max-w-6xl mx-auto relative z-10">
 
-          <div className="px-6 sm:px-10 pb-10 relative">
+    <div className="grid lg:grid-cols-[320px_1fr] gap-10 items-start">
 
-            {/* Avatar */}
-            <div className="absolute -top-16 left-6 sm:left-10">
-              {tutor.tutorImage ? (
-                <img
-                  src={tutor.tutorImage}
-                  alt={tutor.tutorName}
-                  className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-lg"
-                />
-              ) : (
-                <div className="w-28 h-28 rounded-2xl bg-sky-100 border-4 border-white shadow-lg flex items-center justify-center text-4xl font-black text-sky-500">
-                  {tutor.tutorName?.charAt(0).toUpperCase()}
-                </div>
-              )}
+      {/* LEFT PROFILE */}
+      <div className="space-y-6">
+
+        {/* avatar */}
+        <div className="relative w-fit">
+
+          {tutor.tutorImage ? (
+            <img
+              src={tutor.tutorImage}
+              alt={tutor.tutorName}
+              className="w-36 h-36 rounded-[36px] object-cover shadow-2xl shadow-sky-100"
+            />
+          ) : (
+            <div className="w-36 h-36 rounded-[36px] bg-sky-100 flex items-center justify-center text-5xl font-black text-sky-500">
+              {tutor.tutorName?.charAt(0).toUpperCase()}
             </div>
+          )}
 
-            {/* Name + Button */}
-            <div className="pt-16 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-black text-slate-800">{tutor.tutorName}</h1>
-                <p className="text-sky-600 font-semibold mt-0.5">{tutor.subject || 'Academic Mentor'}</p>
-                <p className="text-slate-400 text-sm mt-0.5">{tutor.institution} · {tutor.experience} exp.</p>
-              </div>
-              <button
-                onClick={handleOpenModal}
-                className="px-7 py-3 bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-bold rounded-xl shadow-lg shadow-sky-200 transition-all duration-200 active:scale-95 whitespace-nowrap"
-              >
-                Book Session
-              </button>
-            </div>
+          {/* floating action */}
+          
+        </div>
 
-            <hr className="my-7 border-slate-100" />
+        {/* name */}
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-slate-800">
+            {tutor.tutorName}
+          </h1>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-              {infoItems.map((item) => (
-                <div key={item.label} className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                  <div className="flex items-center gap-2 mb-1.5">{item.icon}<span className="text-xs font-bold text-slate-400 uppercase tracking-wide">{item.label}</span></div>
-                  <p className="text-sm font-bold text-slate-700">{item.value}</p>
-                </div>
-              ))}
-            </div>
+          <p className="text-sky-500 font-semibold mt-1">
+            {tutor.subject || 'Academic Mentor'}
+          </p>
+        </div>
 
-            {/* Bio */}
-            {tutor.bio && (
-              <div>
-                <h3 className="text-base font-bold text-slate-800 mb-2">About</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{tutor.bio}</p>
-              </div>
-            )}
+        {/* lightweight menu style info */}
+        <div className="space-y-3 text-slate-400 font-medium flex flex-col">
 
+          {/* <div className="hover:text-slate-700 transition cursor-pointer badge badge-outline">
+            {tutor.institution}
+          </div> */}
+
+          <div className="hover:text-slate-700 transition cursor-pointer badge border-none bg-blue-100 text-blue-800">
+            {tutor.experience} Experience
           </div>
+
+          <div className="hover:text-slate-700 transition cursor-pointer badge border-none bg-green-100 text-green-800">
+            {tutor.totalSlot ?? 0} Slots Left
+          </div>
+          <button
+            onClick={handleOpenModal}
+            className="btn bg-blue-500 text-white border-none hover:bg-blue-600 w-full mb-4 shadow-none transition-all hover:-translate-y-0.5"
+          >
+            Book a session
+          </button>
+
         </div>
       </div>
 
-      {/* Booking Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
-          />
+      {/* RIGHT CONTENT */}
+      <div className="space-y-8">
 
-          {/* Modal */}
-          <div className="relative z-10 bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border border-slate-100">
+        {/* expertise */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-8 shadow-[0_10px_40px_rgba(96,165,250,0.08)]">
 
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <FiX className="h-5 w-5" />
-            </button>
+          <h3 className="text-lg font-bold text-slate-700 mb-6">
+            Specializes in...
+          </h3>
 
-            <h3 className="text-xl font-black text-slate-800 mb-5">Confirm Booking</h3>
+          <div className="flex flex-wrap gap-4">
 
-            {/* Auto-filled info */}
-            <div className="mb-5 p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-2 text-xs text-slate-500">
-              <div className="flex justify-between">
-                <span>Tutor</span>
-                <span className="font-bold text-slate-700">{tutor.tutorName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Subject</span>
-                <span className="font-bold text-slate-700">{tutor.subject || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Slots Left</span>
-                <span className="font-bold text-emerald-600">{tutor.totalSlot ?? 0}</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleConfirmBooking} className="space-y-4">
-
-              {/* Student Name */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Your Full Name</label>
-                <div className="relative">
-                  <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    required
-                    value={studentName}
-                    onChange={(e) => setStudentName(e.target.value)}
-                    placeholder="e.g. Rahim Uddin"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 text-gray-500 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-50"
-                  />
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Phone Number</label>
-                <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="tel"
-                    required
-                    value={studentPhone}
-                    onChange={(e) => setStudentPhone(e.target.value)}
-                    placeholder="e.g. 017XXXXXXXX"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 text-gray-500 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-50"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={bookingLoading}
-                className="w-full py-3 bg-slate-800 hover:bg-slate-900 disabled:bg-slate-400 text-white text-sm font-bold rounded-xl transition-colors"
+            {infoItems.map((item) => (
+              <div
+                key={item.label}
+                className="px-5 py-3 rounded-2xl bg-[#f5f9ff] border border-sky-100 text-slate-600 font-medium hover:-translate-y-1 transition-all shadow-sm"
               >
-                {bookingLoading ? 'Processing...' : 'Confirm Booking'}
-              </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-sky-400">
+                    {item.icon}
+                  </span>
 
-            </form>
+                  <span>
+                    {item.value}
+                  </span>
+                </div>
+              </div>
+            ))}
+
           </div>
         </div>
-      )}
-    </main>
+
+        {/* bio */}
+        {tutor.bio && (
+          <div className="bg-white/60 backdrop-blur-xl rounded-[32px] p-8 shadow-[0_10px_40px_rgba(96,165,250,0.06)]">
+
+            <h3 className="text-lg font-bold text-slate-700 mb-4">
+              About
+            </h3>
+
+            <p className="text-slate-500 leading-relaxed text-[15px] max-w-3xl">
+              {tutor.bio}
+            </p>
+          </div>
+        )}
+
+      </div>
+    </div>
+  </div>
+
+  {/* MODAL */}
+  {isModalOpen && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
+
+      {/* backdrop */}
+      <div
+        className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+        onClick={() => setIsModalOpen(false)}
+      />
+
+      {/* modal */}
+      <div className="relative z-10 w-full max-w-md rounded-[36px] bg-white p-8 shadow-2xl border border-sky-100">
+
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="absolute top-5 right-5 w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"
+        >
+          <FiX className="w-4 h-4" />
+        </button>
+
+        <div className="mb-6">
+          <h2 className="text-3xl font-black text-slate-800">
+            Book Session
+          </h2>
+
+          <p className="text-slate-400 mt-1 text-sm">
+            Reserve your tutoring slot
+          </p>
+        </div>
+
+        {/* tutor mini strip */}
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#f5f9ff] border border-sky-100 mb-6">
+
+          {tutor.tutorImage ? (
+            <img
+              src={tutor.tutorImage}
+              alt=""
+              className="w-14 h-14 rounded-2xl object-cover"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-2xl bg-sky-100 flex items-center justify-center font-bold text-sky-500">
+              {tutor.tutorName?.charAt(0)}
+            </div>
+          )}
+
+          <div>
+            <h4 className="font-bold text-slate-700">
+              {tutor.tutorName}
+            </h4>
+
+            <p className="text-sm text-slate-400">
+              {tutor.subject}
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleConfirmBooking} className="space-y-4">
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-600 mb-2">
+              Full Name
+            </label>
+
+            <div className="relative">
+
+              <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+
+              <input
+                type="text"
+                required
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="Your name"
+                className="w-full h-12 pl-11 pr-4 rounded-2xl text-slate-600 bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-sky-100 focus:border-sky-300 transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-600 mb-2">
+              Phone Number
+            </label>
+
+            <div className="relative">
+
+              <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+
+              <input
+                type="tel"
+                required
+                value={studentPhone}
+                onChange={(e) => setStudentPhone(e.target.value)}
+                placeholder="017XXXXXXXX"
+                className="w-full h-12 pl-11 pr-4 rounded-2xl text-slate-600 bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-sky-100 focus:border-sky-300 transition"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={bookingLoading}
+            className="w-full h-12 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-bold shadow-xl shadow-sky-200 transition-all hover:-translate-y-0.5"
+          >
+            {bookingLoading ? 'Processing...' : 'Confirm Booking'}
+          </button>
+
+        </form>
+      </div>
+    </div>
+  )}
+</main>
   );
 }

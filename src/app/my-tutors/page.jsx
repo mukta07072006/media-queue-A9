@@ -114,197 +114,377 @@ const handleUpdateSuccess = (updatedTutor) => {
     );
 };
 
-
+console.log(myTutors)
      
 
     return (
-        <div className="min-w-full mx-auto my-12 px-20 text-slate-900">
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-6 mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight">My Tutors</h1>
-                </div>
+        <div className="w-full min-h-screen bg-slate-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-                {/* Practice Tip: Link this button to your /add-tutor form page */}
-                <button onClick={() => redirect('/add-tutor')} className="self-start md:self-auto px-5 py-2.5 bg-slate-900 text-white font-semibold text-sm rounded-xl hover:bg-slate-800 transition shadow-sm">
-                    + Add Tutor
-                </button>
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-10">
+            <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+                    My Tutors
+                </h1>
+
+                <p className="text-sm text-slate-500 mt-2">
+                    Manage your published tutor listings and availability.
+                </p>
             </div>
 
-            {/* Grid Layout for published listings */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Replace sampleMyTutors.map with your dynamic state when ready to connect your API */}
+            <button
+                onClick={() => redirect('/add-tutor')}
+                className="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-all duration-200 shadow-sm active:scale-[0.98]"
+            >
+                + Add Tutor
+            </button>
+        </div>
+
+        {/* Empty State */}
+        {myTutors.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-3xl p-10 text-center shadow-sm">
+                <h2 className="text-lg font-semibold text-slate-800">
+                    No tutor listings found
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-2">
+                    Create your first tutor listing to start receiving bookings.
+                </p>
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {myTutors.map((tutor) => (
-                    console.log("tutorId", tutor._id),
                     <div
                         key={tutor._id}
-                        className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between"
+                        className="group bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                     >
-                        <div className="p-6">
-                            {/* Profile Card Header */}
-                            <div className="flex items-start gap-4 mb-4">
+                        {/* Card Body */}
+                        <div className="p-6 flex-1">
+
+                            {/* Tutor Header */}
+                            <div className="flex items-start gap-4">
                                 <img
-                                    src={tutor.tutorImage}
-                                    alt={tutor.subject}
-                                    className="w-16 h-16 rounded-xl object-cover border border-slate-100 bg-slate-50"
+                                    src={
+                                        tutor?.tutorImage ||
+                                        "https://i.ibb.co/4pDNDk1/avatar.png"
+                                    }
+                                    alt={tutor?.subject || "Tutor"}
+                                    className="w-16 h-16 rounded-2xl object-cover border border-slate-200 bg-slate-100 shrink-0"
                                 />
+
                                 <div className="flex-1 min-w-0">
-                                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                                        {tutor.teachingMethod}
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 mb-2">
+                                        {tutor?.teachingMethod || "Teaching"}
                                     </span>
-                                    <h3 className="text-lg font-bold text-slate-900 leading-snug tracking-tight mb-0.5">
-                                        {tutor.subject}
+
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-slate-900 leading-tight truncate">
+                                        {tutor?.tutorName || "Untitled Tutor"}
                                     </h3>
-                                    <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                                        <FaLocationArrow /> {tutor.location}
-                                    </p>
+                                    <h3 className="text-sm bg-gray-50 badge border-none  text-gray-500 leading-tight truncate">
+                                        {tutor?.subject || "Untitled Subject"}
+                                    </h3>
+                                    </div>
+
+                                    {/* <div className="flex items-center gap-2 text-sm text-slate-500">
+                                        <FaLocationArrow className="text-xs shrink-0" />
+
+                                        <span className="truncate">
+                                            {tutor?.location || "Unknown Location"}
+                                        </span>
+                                    </div> */}
                                 </div>
                             </div>
 
-                            {/* Bio Section */}
-                            <p className="text-slate-600 text-sm leading-relaxed mb-5 line-clamp-3">
-                                {tutor.bio}
-                            </p>
+                            {/* Bio */}
+                            <div className="mt-1">
+                                <p className="text-sm leading-7 text-slate-600 line-clamp-3">
+                                    {tutor?.bio || "No description available."}
+                                </p>
+                            </div>
 
-                            {/* Specifications Sub-Grid */}
-                            <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl text-center text-xs border border-slate-100">
-                                <div>
-                                    <p className="text-slate-400 font-medium mb-0.5">Rate</p>
-                                    <p className="font-bold text-slate-900">{tutor.hourlyFee} BDT/hr</p>
+                            {/* Stats */}
+                            <div className="mt-1 grid grid-cols-3 gap-3">
+                                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-center">
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                                        Rate
+                                    </p>
+
+                                    <p className="text-sm font-bold text-slate-900 mt-1 break-words">
+                                        {tutor?.hourlyFee || 0} BDT
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-slate-400 font-medium mb-0.5">Slots Left</p>
-                                    <p className="font-bold text-slate-900">{tutor.totalSlot} seats</p>
+
+                                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-center">
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                                        Seats
+                                    </p>
+
+                                    <p className="text-sm font-bold text-slate-900 mt-1">
+                                        {tutor?.totalSlot || 0}
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-slate-400 font-medium mb-0.5">Availability</p>
-                                    <p className="font-bold text-slate-800 text-[10px] truncate px-1">{tutor.availableTime}</p>
+
+                                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-center">
+                                    <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                                        Available
+                                    </p>
+
+                                    <p className="text-[11px] font-bold text-slate-800 mt-1 line-clamp-2">
+                                        {tutor?.availableTime || "N/A"}
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Practical Action Footer Bar */}
-                        <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between gap-4">
+                        {/* Footer */}
+                        <div className="p-5 border-t border-slate-100 bg-slate-50/70 grid grid-cols-2 gap-3">
+
                             <button
                                 onClick={() => handleDeleteProfile(tutor._id)}
-                                className="px-4 py-2 text-xs font-semibold bg-red-50 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-xl border border-transparent hover:border-red-100 transition"
+                                className="w-full py-3 rounded-2xl border border-red-100 bg-red-50 text-red-600 text-sm font-semibold hover:bg-red-100 transition-all duration-200 active:scale-[0.98]"
                             >
-                                Delete Listing
+                                Delete
                             </button>
 
                             <button
                                 onClick={() => handleUpdateProfile(tutor)}
-                                className="px-5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs transition shadow-sm"
+                                className="w-full py-3 rounded-2xl border border-slate-200 bg-white text-slate-800 text-sm font-semibold hover:bg-slate-100 transition-all duration-200 active:scale-[0.98]"
                             >
-                                Modify Details
+                                Modify
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
+        )}
 
+        {/* Edit Modal */}
+        {editingTutor && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center text-slate-800 justify-center p-4">
+                <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
 
-            {/* Modify Details Inline Modal */}
-{editingTutor && (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-            
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-900">Modify Listing details</h2>
-                <button onClick={() => setEditingTutor(null)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            </div>
+                    {/* Modal Header */}
+                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-900">
+                                Modify Tutor Listing
+                            </h2>
 
-            <form onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const payload = Object.fromEntries(formData.entries());
+                            <p className="text-sm text-slate-500 mt-1">
+                                Update your tutor profile information.
+                            </p>
+                        </div>
 
-                try {
-                    const response = await fetch(`http://localhost:4500/api/tutors/mine?tutorId=${editingTutor._id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        handleUpdateSuccess(data); // Inject changes into frontend view
-                        toast.success('Listing modified successfully!');
-                        setEditingTutor(null); // Close modal
-                    } else {
-                        toast.error(data.error || 'Failed to apply edits');
-                    }
-                } catch (err) {
-                    toast.error('Network mistake syncing updates');
-                }
-            }} className="p-6 overflow-y-auto space-y-4 text-sm">
-                
-                <div>
-                    <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Subject</label>
-                    <input type="text" name="subject" defaultValue={editingTutor.subject} required className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Hourly Fee (BDT)</label>
-                        <input type="number" name="hourlyFee" defaultValue={editingTutor.hourlyFee} required className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                        <button
+                            onClick={() => setEditingTutor(null)}
+                            className="w-10 h-10 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition flex items-center justify-center"
+                        >
+                            ✕
+                        </button>
                     </div>
-                    <div>
-                        <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Total Seats</label>
-                        <input type="number" name="totalSlot" defaultValue={editingTutor.totalSlot} required className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                    </div>
-                </div>
 
-                <div>
-                    <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Location</label>
-                    <input type="text" name="location" defaultValue={editingTutor.location} required className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                </div>
+                    {/* Form */}
+                    <form
+                        onSubmit={async (e) => {
+                            e.preventDefault();
 
-                <div>
-                    <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Availability Window</label>
-                    <input type="text" name="availableTime" defaultValue={editingTutor.availableTime}  className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900" />
-                </div>
+                            
+                            const formData = new FormData(e.currentTarget);
+                            const payload = Object.fromEntries(formData.entries());
+                            const {data: tokenData} =await authClient.token();
 
-                <div>
-                    <label className="block font-bold text-slate-700 mb-1 text-xs uppercase">Bio Summary</label>
-                    <textarea name="bio" rows="3" defaultValue={editingTutor.bio}  className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none" />
-                </div>
 
-                <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
-                    <button type="button" onClick={() => setEditingTutor(null)} className="px-4 py-2 font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">Cancel</button>
-                    <button type="submit" className="px-4 py-2 font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition">Save updates</button>
-                </div>
-            </form>
-        </div>
-    </div>
-)}
+                            try {
+                                const response = await fetch(
+                                    `http://localhost:4500/api/tutors/mine?tutorId=${editingTutor._id}`,
+                                    {
+                                        method: "PUT",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            authorization: `Bearer ${tokenData.token}`,
+                                        },
+                                        body: JSON.stringify(payload),
+                                    }
+                                );
 
-            {/* Confirmation Modal */}
-            {deleteModal.isOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl shadow-lg p-6 max-w-sm mx-4">
-                        <h2 className="text-lg font-bold text-slate-900 mb-2">Delete Listing?</h2>
-                        <p className="text-slate-600 text-sm mb-6">
-                            Are you sure you want to delete the <strong>{deleteModal.tutorSubject}</strong> listing? This action cannot be undone.
-                        </p>
-                        <div className="flex gap-3 justify-end">
+                                const data = await response.json();
+
+                                if (response.ok) {
+                                    handleUpdateSuccess(data);
+                                    toast.success("Listing modified successfully!");
+                                    setEditingTutor(null);
+                                } else {
+                                    toast.error(
+                                        data.error || "Failed to apply edits"
+                                    );
+                                }
+                            } catch (err) {
+                                toast.error(
+                                    "Network mistake syncing updates"
+                                );
+                            }
+                        }}
+                        className="overflow-y-auto p-6 space-y-5"
+                    >
+
+                        {/* Subject */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                name="subject"
+                                defaultValue={editingTutor.subject}
+                                required
+                                className="w-full h-12 px-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                            />
+                        </div>
+
+                        {/* Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Hourly Fee
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="hourlyFee"
+                                    defaultValue={editingTutor.hourlyFee}
+                                    required
+                                    className="w-full h-12 px-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Total Seats
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="totalSlot"
+                                    defaultValue={editingTutor.totalSlot}
+                                    required
+                                    className="w-full h-12 px-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                name="location"
+                                defaultValue={editingTutor.location}
+                                required
+                                className="w-full h-12 px-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                            />
+                        </div>
+
+                        {/* Availability */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                Availability Window
+                            </label>
+
+                            <input
+                                type="text"
+                                name="availableTime"
+                                defaultValue={editingTutor.availableTime}
+                                className="w-full h-12 px-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                            />
+                        </div>
+
+                        {/* Bio */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                Bio Summary
+                            </label>
+
+                            <textarea
+                                name="bio"
+                                rows="4"
+                                defaultValue={editingTutor.bio}
+                                className="w-full px-4 py-3 rounded-2xl border border-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                            />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-100">
                             <button
-                                onClick={handleCancelDelete}
-                                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                                type="button"
+                                onClick={() => setEditingTutor(null)}
+                                className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition"
                             >
                                 Cancel
                             </button>
+
                             <button
-                                onClick={handleConfirmDelete}
-                                className="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition"
+                                type="submit"
+                                className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold transition shadow-sm"
                             >
-                                Delete
+                                Save Changes
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+        )}
+
+        {/* Delete Modal */}
+        {deleteModal.isOpen && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6">
+
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 text-xl shrink-0">
+                            ⚠
+                        </div>
+
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-900">
+                                Delete Listing?
+                            </h2>
+
+                            <p className="text-sm text-slate-500 mt-2 leading-6">
+                                Are you sure you want to delete{" "}
+                                <span className="font-semibold text-slate-700">
+                                    {deleteModal.tutorSubject}
+                                </span>
+                                ? This action cannot be undone.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mt-8">
+                        <button
+                            onClick={handleCancelDelete}
+                            className="w-full py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            onClick={handleConfirmDelete}
+                            className="w-full py-3 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-semibold transition"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
-            )}
-        </div>
+            </div>
+        )}
+    </div>
+</div>
     );
 }

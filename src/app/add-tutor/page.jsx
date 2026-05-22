@@ -45,6 +45,9 @@ export default function AddTutorPage() {
             return;
         }
 
+        const {data:tokenData} =await authClient.token();
+        console.log(tokenData.token)
+
         setLoading(true);
         setError('');
 
@@ -72,7 +75,8 @@ export default function AddTutorPage() {
             const response = await fetch('http://localhost:4500/api/tutors', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${tokenData.token}`
                 },
                 body: JSON.stringify(payload)
             });

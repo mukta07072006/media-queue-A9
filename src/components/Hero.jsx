@@ -7,8 +7,6 @@ import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { FiArrowRight, FiBookOpen, FiSearch, FiStar } from 'react-icons/fi';
 
 import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
 const slides = [
@@ -99,7 +97,7 @@ const Hero = () => {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
               {/* Left Column */}
               <div className="lg:col-span-6 space-y-6 text-left order-2 lg:order-1">
@@ -147,7 +145,7 @@ const Hero = () => {
 
               {/* Right Column */}
               <div className="lg:col-span-6 relative flex justify-center order-1 lg:order-2">
-                <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] max-w-lg rounded-3xl overflow-hidden shadow-2xl shadow-sky-100 border-4 border-white bg-slate-100">
+                <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] max-w-lg rounded-3xl overflow-hidden   bg-slate-100">
                   <img
                     src={slide.image}
                     alt={slide.title}
