@@ -3,8 +3,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Parkinsans } from 'next/font/google';
 import { authClient } from '@/lib/auth-client';
-import { Menu, X, User, LogOut, BookOpen, PlusCircle, Users, Calendar } from 'lucide-react';
+import { Menu, X, User, LogOut, PlusCircle, Users, Calendar, ChevronDown, ArrowRight } from 'lucide-react';
+
+const parkinsans = Parkinsans({
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -29,154 +35,157 @@ const Navbar = () => {
     window.location.href = '/login';
   };
 
-  // Navigation configurations
   const publicLinks = [
     { name: 'Home', href: '/' },
     { name: 'Tutors', href: '/tutors' },
+    { name: 'About Us', href: '/about' },
   ];
 
   const privateLinks = [
-    { name: 'Add Tutor', href: '/add-tutor', icon: PlusCircle },
-    { name: 'My Tutors', href: '/my-tutors', icon: Users },
+    { name: 'Dashboard', href: '/dashboard', icon: Users },
     { name: 'My Booked Sessions', href: '/my-booked-sessions', icon: Calendar },
   ];
 
   const isActive = (path) => pathname === path;
 
+  // Links shown in center: always public + private if logged in
+  const centerLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
+
   return (
-    <nav className="bg-white border-b border-sky-100 sticky top-0 z-50">
+    <nav className={`${parkinsans.className} bg-white border-b border-green-100 sticky top-0 z-50`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          
-          {/* Left Side: Logo & Main Navigation */}
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2 text-xl font-bold bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
-              <BookOpen className="h-6 w-6 text-sky-500" />
-              <span>MediaQueue</span>
-            </Link>
+        <div className="flex items-center justify-between h-16">
 
-            <div className="hidden md:flex items-center space-x-1">
-              {publicLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    isActive(link.href)
-                      ? 'bg-sky-50 text-sky-600'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+          {/* Left: Logo */}
+          <Link
+            href="/"
+            className={`${parkinsans.className} text-xl font-bold text-green-900 tracking-tight shrink-0`}
+          >
+            EduFlex
+          </Link>
 
-              {/* Render Private Links only if user is logged in */}
-              {user && privateLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    isActive(link.href)
-                      ? 'bg-sky-50 text-sky-600'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+          {/* Center: Nav Links (desktop) */}
+          <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            {centerLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`${parkinsans.className} px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  isActive(link.href)
+                    ? 'bg-lime-300 text-green-900'
+                    : 'text-green-800 hover:bg-green-50'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-          {/* Right Side: Auth Action Elements */}
-          <div className="hidden md:flex items-center">
+          {/* Right: Auth (desktop) */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             {isPending ? (
-              <div className="h-8 w-8 rounded-full bg-slate-100 animate-pulse" />
+              <div className="h-8 w-20 rounded-full bg-green-100 animate-pulse" />
             ) : user ? (
-              /* User Profile Menu Dropdown */
-              <div className="relative ml-3" ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  className={`${parkinsans.className} flex items-center gap-2 px-3 py-1.5 rounded-full border-[1.5px] border-green-200 hover:border-green-400 hover:bg-green-50 transition-all`}
                 >
                   {user.image ? (
                     <img
                       src={user.image}
                       alt={user.name}
-                      className="h-8 w-8 rounded-full object-cover border border-sky-200"
+                      className="h-6 w-6 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold">
+                    <div className="h-6 w-6 rounded-full bg-lime-300 text-green-900 flex items-center justify-center text-xs font-bold">
                       {user.name?.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="text-sm font-semibold text-slate-700 hidden lg:block">{user.name}</span>
+                  <span className="text-sm font-semibold text-green-900 hidden lg:block">
+                    {user.name}
+                  </span>
+                  <ChevronDown size={14} className="text-green-600" />
                 </button>
 
-                {/* Actual Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-sky-100 py-2 transform origin-top-right transition-all duration-200 z-50">
-                    <div className="px-4 py-2 border-b border-slate-50">
-                      <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
-                      <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border-[1.5px] border-green-100 shadow-lg py-2 z-50">
+                    <div className="px-4 py-2.5 border-b border-green-50">
+                      <p className={`${parkinsans.className} text-sm font-bold text-green-900 truncate`}>
+                        {user.name}
+                      </p>
+                      <p className={`${parkinsans.className} text-xs text-green-500 truncate`}>
+                        {user.email}
+                      </p>
                     </div>
 
                     <Link
                       href="/profile"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-colors"
+                      className={`${parkinsans.className} flex items-center gap-2.5 px-4 py-2.5 text-sm text-green-800 hover:bg-green-50 transition-colors`}
                     >
-                      <User className="h-4 w-4" />
-                      <span>My Profile</span>
+                      <User size={15} className="text-green-500" />
+                      My Profile
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center space-x-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-slate-50"
+                      className={`${parkinsans.className} w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors border-t border-green-50`}
                     >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign out</span>
+                      <LogOut size={15} />
+                      Sign Out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              /* Login/Register Guest CTA */ 
-              <div className="flex items-center space-x-3">
-                <Link href="/login" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className={`${parkinsans.className} px-4 py-2 text-sm font-semibold text-green-800 hover:text-green-900 transition-colors`}
+                >
                   Sign In
                 </Link>
-                <Link
-                  href="/register"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 rounded-xl shadow-md shadow-sky-100 transition-all duration-200 transform active:scale-[0.98]"
-                >
-                  Register
-                </Link>
+                 <Link
+              href="/register"
+                onClick={() => setIsOpen(false)}
+                 className={`px-4 justify-between py-1 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Register <div
+            className='h-8 w-8 bg-lime-300 rounded-full flex justify-center items-center p-2'>
+                <ArrowRight
+            size={25}
+            color='#000' 
+            />
+                </div> </Link>
+                
               </div>
             )}
           </div>
 
-          {/* Hamburger Mobile Menu Toggle Button */}
+          {/* Mobile hamburger */}
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-slate-600 hover:bg-slate-50 focus:outline-none"
+              className="p-2 rounded-xl text-green-800 hover:bg-green-50 transition-colors"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay */}
+      {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white px-4 pt-2 pb-4 space-y-1 shadow-inner">
+        <div className="md:hidden border-t border-green-100 bg-white px-4 pt-3 pb-5 space-y-1">
           {publicLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className={`block px-4 py-2.5 rounded-xl text-base font-semibold ${
-                isActive(link.href) ? 'bg-sky-50 text-sky-600' : 'text-slate-600 hover:bg-slate-50'
+              className={`${parkinsans.className} block px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
+                isActive(link.href)
+                  ? 'bg-lime-300 text-green-900'
+                  : 'text-green-800 hover:bg-green-50'
               }`}
             >
               {link.name}
@@ -185,7 +194,7 @@ const Navbar = () => {
 
           {user && (
             <>
-              <div className="my-2 border-t border-slate-100" />
+              <div className="my-2 border-t border-green-100" />
               {privateLinks.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -193,45 +202,48 @@ const Navbar = () => {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-base font-semibold ${
-                      isActive(link.href) ? 'bg-sky-50 text-sky-600' : 'text-slate-600 hover:bg-slate-50'
+                    className={`${parkinsans.className} flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
+                      isActive(link.href)
+                        ? 'bg-lime-300 text-green-900'
+                        : 'text-green-800 hover:bg-green-50'
                     }`}
                   >
-                    <Icon className="h-5 w-5 opacity-70" />
-                    <span>{link.name}</span>
+                    <Icon size={16} className="opacity-60" />
+                    {link.name}
                   </Link>
                 );
               })}
-              <div className="my-2 border-t border-slate-100" />
+              <div className="my-2 border-t border-green-100" />
               <button
-                onClick={() => {
-                  setIsOpen(false);
-                  handleLogout();
-                }}
-                className="w-full flex items-center space-x-2 px-4 py-2.5 text-base font-semibold text-red-600 hover:bg-red-50 rounded-xl"
+                onClick={() => { setIsOpen(false); handleLogout(); }}
+                className={`${parkinsans.className} w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-2xl transition-colors`}
               >
-                <LogOut className="h-5 w-5" />
-                <span>Sign Out</span>
+                <LogOut size={16} />
+                Sign Out
               </button>
             </>
           )}
 
           {!user && !isPending && (
-            <div className="pt-4 grid grid-cols-2 gap-3 border-t border-slate-100 mt-2">
+            <div className="pt-3 grid grid-cols-2 gap-3 border-t border-green-100 mt-2">
               <Link
                 href="/login"
                 onClick={() => setIsOpen(false)}
-                className="flex justify-center items-center py-2.5 text-center text-sm font-semibold border border-slate-200 text-slate-700 rounded-xl bg-slate-50"
+                className={`${parkinsans.className} flex justify-center py-2.5 text-sm font-semibold text-green-800 border-[1.5px] border-green-200 rounded-full hover:bg-green-50 transition-colors`}
               >
                 Sign In
               </Link>
+              
               <Link
-                href="/signup"
+              href="/register"
                 onClick={() => setIsOpen(false)}
-                className="flex justify-center items-center py-2.5 text-center text-sm font-semibold text-white bg-sky-500 rounded-xl"
-              >
-                Register
-              </Link>
+                 className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Register <div
+            className='h-8 w-8 bg-lime-300 rounded-full flex justify-center items-center p-2'>
+                <ArrowRight
+            size={25}
+            color='#000' 
+            />
+                </div> </Link>
             </div>
           )}
         </div>

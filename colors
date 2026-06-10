@@ -1,0 +1,30 @@
+Background Colors
+bg-green-50 - The very light, off-white/greenish background of the top hero section.
+
+bg-green-950 - The dark forest green background used in the bottom "Our Story" section.
+
+bg-emerald-600 - The solid green used for the primary "Donate Now" buttons.
+
+bg-lime-300 (or bg-[#c4ed68]) - The vibrant, neon green used for the arrow circles, "Building Brighter Paths" badge, and the shadow/border behind the photo grid and stat cards.
+
+bg-white - The background for the "Volunteer" button, the stat cards, and the image framing.
+
+bg-[#9eb5a1] - The muted sage green used for the outer presentation/mockup background (if you need the presentation frame itself).
+
+Text Colors
+text-green-950 - The very dark green used for the main headings (e.g., "Shine Hope Where It's Needed Most").
+
+text-white - Used for the text inside the dark green buttons and the headings/body text in the bottom dark section.
+
+text-gray-600 - The muted dark gray used for the body copy (e.g., "At LightReach, we connect people...").
+
+text-green-900 - Used for text inside the bright lime/green badges.
+
+text-emerald-600 - The green text used for the "Volunteer" outline button.
+
+text-gray-400 - Used for the "Logoipsum" placeholder logos in the middle banner.
+
+Border Colors
+border-lime-300 - The bright green border wrapping the main image gallery in the hero section.
+
+border-emerald-600 - The border used for the "Volunteer" button.
