@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { Parkinsans } from 'next/font/google';
 import { Highlight } from './reusablecomp/Highlight';
@@ -7,12 +8,18 @@ import photo1 from '@/assets/teacher-one.webp'
 import photo2 from '@/assets/teacher-two.webp'
 import photo3 from '@/assets/teacher-three.webp'
 import { ArrowRight } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { redirect } from 'next/navigation';
+
+
 
 
 export const parkinsans = Parkinsans({
   subsets: ['latin'],
   display: 'swap',
 });
+
+
 
 const avatars = [
   {
@@ -38,6 +45,20 @@ const avatars = [
 ];
 
 const HeroNew = () => {
+
+
+    const {data: session, isPending} = authClient.useSession();
+
+const checkAuth = ()=>{
+    if(session){
+      redirect('/become-tutor')
+    }
+    else{
+      redirect('/register')
+    }
+}
+
+
     return (
         <div className="bg-green-50 min-h-screen w-full flex justify-center flex-col items-center
         ">
@@ -61,14 +82,14 @@ const HeroNew = () => {
             />
 
             <div className='mt-10 max-w-[90vw] md:max-w-full flex gap-5'>
-            <button className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Book a Tutor <div
+            <button  className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Book a Tutor <div
             className='h-8 w-8 bg-lime-300 rounded-full flex justify-center items-center p-2'>
                 <ArrowRight
             size={25}
             color='#000' 
             />
                 </div> </button>
-            <button className={`px-5 justify-between py-2 items-center cursor-pointer bg-white flex hover:gap-10 transition-all gap-8 text-black font-semibold rounded-full ${parkinsans.className}`}>Be a Tutor <div
+            <button onClick={()=> checkAuth()} className={`px-5 justify-between py-2 items-center cursor-pointer bg-white flex hover:gap-10 transition-all gap-8 text-black font-semibold rounded-full ${parkinsans.className}`}>Be a Tutor <div
             className='h-8 w-8 bg-emerald-600 rounded-full flex justify-center items-center p-2'>
                 <ArrowRight
             size={25}

@@ -24,10 +24,16 @@ const AllTutorsPage = () => {
         if (search) params.append('search', search);
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
+        
         const response = await fetch(`${API_URL}/api/tutors?${params.toString()}`);
         if (!response.ok) throw new Error('Failed to fetch tutor profiles.');
+        
         const data = await response.json();
-        setTutors(data);
+        
+        // Filter out tutors whose status is not 'approved'
+        const approvedTutors = data.filter(tutor => tutor.status === 'approved');
+        setTutors(approvedTutors);
+        
       } catch (err) {
         setError(err.message || 'Something went wrong.');
       } finally {
@@ -39,7 +45,7 @@ const AllTutorsPage = () => {
   }, [search, startDate, endDate]);
 
   const hasFilters = search || startDate || endDate;
-
+  console.log(tutors)
   return (
     <main className={`${parkinsans.className} min-h-screen bg-green-50 py-12`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
