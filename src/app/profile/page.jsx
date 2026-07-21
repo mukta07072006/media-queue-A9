@@ -1,12 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { Parkinsans } from 'next/font/google';
+import { Highlight } from '@/components/reusablecomp/Highlight';
 import {
-  ArrowLeft, BookOpen, Share2, MapPin, Users,
-  Video, MapPinCheck, Clock, Calendar, Phone, Sparkles,
+  ArrowLeft, BookOpen, MapPin, Calendar, Clock,
+  GraduationCap, Star, TrendingUp, Award, ChevronRight,
+  Sparkles, Phone, Mail, UserCheck, Loader2,
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { API_URL } from '@/lib/api';
+import Link from 'next/link';
+
+const parkinsans = Parkinsans({ subsets: ['latin'], display: 'swap' });
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('sessions');
@@ -33,264 +39,249 @@ export default function UserProfile() {
       .finally(() => setLoading(false));
   }, [userd?.id]);
 
-  if (!session.data) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f2f7fd]">
-      <p className="text-slate-400">Please log in to view your profile.</p>
-    </div>
-  );
+  if (!session.data) {
+    return (
+      <div className={`${parkinsans.className} min-h-screen flex items-center justify-center bg-green-50`}>
+        <div className="text-center space-y-3">
+          <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto">
+            <UserCheck size={28} className="text-green-400" />
+          </div>
+          <p className="text-green-700 font-semibold text-sm">Please log in to view your profile.</p>
+          <Link href="/login" className="inline-flex items-center gap-1.5 text-lime-600 font-bold text-sm hover:text-lime-700 transition-colors">
+            Sign In <ChevronRight size={14} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const stats = [
-    { icon: <BookOpen size={16} />, label: 'Tutors Added',   value: 40,    bg: 'bg-blue-50',   icon_bg: 'bg-white', color: 'text-blue-400' },
-    { icon: <Share2   size={16} />, label: 'Total Sessions', value: 187,   bg: 'bg-emerald-50', icon_bg: 'bg-white', color: 'text-emerald-400' },
-    { icon: <Users    size={16} />, label: 'Completed',      value: '29k', bg: 'bg-orange-50',  icon_bg: 'bg-white', color: 'text-orange-400' },
+    { icon: BookOpen, label: 'Sessions', value: bookings.length, color: 'text-green-700', bg: 'bg-green-100', border: 'border-green-200' },
+    { icon: TrendingUp, label: 'Hours Learned', value: Math.floor(bookings.reduce((a, b) => a + (b.hours || 1), 0)), color: 'text-lime-700', bg: 'bg-lime-100', border: 'border-lime-200' },
+    { icon: Award, label: 'Streak', value: '12d', color: 'text-emerald-700', bg: 'bg-emerald-100', border: 'border-emerald-200' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f2f7fd]">
+    <div className={`${parkinsans.className} min-h-screen bg-green-50`}>
 
-      {/* NAV */}
-      <header className=" top-0 z-50 h-[60px] flex items-center mt-3">
-        <div className="max-w-5xl mx-auto w-full px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            
-            <span className="font-bold text-3xl text-slate-800">Profile</span>
-          </div>
-          <button className="px-5 py-2 rounded-full bg-black hover:bg-gray-500 text-white font-bold text-[13px] shadow-[0_3px_12px_rgba(96,165,250,0.35)] transition-colors cursor-pointer">
-            Follow
-          </button>
+      {/* ═══════ TOP NAV ═══════ */}
+      <header className="sticky top-0 z-50 bg-green-50/80 backdrop-blur-xl border-b border-green-100">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 font-bold text-sm transition-colors">
+            <ArrowLeft size={18} />
+            Back
+          </Link>
+          <span className="text-[11px] font-bold text-green-500 uppercase tracking-widest">My Profile</span>
+          <div className="w-16" />
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-7 pb-16">
+      <div className="max-w-5xl mx-auto px-6 py-8 pb-20 space-y-6">
 
+        {/* ═══════ HERO CARD ═══════ */}
+        <div className="bg-green-950 rounded-3xl p-8 text-white relative overflow-hidden">
+          {/* Subtle background pattern */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-lime-400/5 rounded-full -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-lime-400/5 rounded-full translate-y-1/2 -translate-x-1/4" />
 
-        <div className="relative bg-white rounded-3xl p-8 border border-blue-100 shadow-[0_4px_24px_rgba(96,165,250,0.08)] overflow-hidden mb-6">
-
-          {/* deco blobs */}
-          <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-blue-50 opacity-60 pointer-events-none animate-[floatA_7s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-10 right-40 w-36 h-36 rounded-full bg-emerald-50 opacity-60 pointer-events-none animate-[floatB_9s_ease-in-out_1.5s_infinite]" />
-
-          <div className="relative z-10 flex flex-wrap items-center gap-7">
-
-            
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {/* Avatar */}
             <div className="relative shrink-0">
-              <img
-                src={userProfile?.photoUrl || "https://i.ibb.co/4pDNDk1/avatar.png"}
-                alt="avatar"
-                className="w-28 h-28 rounded-full object-cover border-[3px] border-gray-100 shadow-[0_4px_20px_rgba(96,165,250,0.14)]"
-              />
-              <span className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full" />
+              <div className="w-24 h-24 rounded-3xl bg-green-800 border-2 border-lime-400/30 p-1">
+                <img
+                  src={userProfile?.photoUrl || "d"}
+                  alt="avatar"
+                  className="w-full h-full rounded-2xl object-cover"
+                />
+              </div>
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-lime-400 border-[3px] border-green-950 rounded-full" />
             </div>
 
-            {/* Name / meta */}
-            <div className="flex-1 min-w-[180px]">
-              <div className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-full px-2.5 py-1 text-[10px] font-bold text-blue-400 tracking-widest uppercase mb-2">
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-lime-400/20 text-lime-300 border border-lime-400/30 mb-3">
                 <Sparkles size={10} /> Student
               </div>
-              <h2 className="text-[32px] font-extrabold text-slate-800 leading-none tracking-tight mb-2">
+              <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-2">
                 {userProfile?.name ?? userd?.name ?? 'Your Name'}
-              </h2>
-              <div className="flex flex-wrap gap-4 text-[12px] text-slate-400 font-semibold">
+              </h1>
+              <div className="flex flex-wrap gap-4 text-[13px] text-green-400 font-semibold">
                 <span className="flex items-center gap-1.5">
-                  <MapPin size={12} className="text-blue-400" />
+                  <Mail size={13} className="text-lime-400" />
+                  {userd?.email}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <MapPin size={13} className="text-lime-400" />
                   {userProfile?.address ?? 'Location not set'}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Phone size={12} className="text-blue-400" />
+                  <Phone size={13} className="text-lime-400" />
                   {userProfile?.phone ?? 'N/A'}
                 </span>
               </div>
-              <p className="mt-2.5 text-slate-400 text-[12.5px] leading-relaxed max-w-md">
-                {userProfile?.bio ?? 'Welcome to your personal learning dashboard. Track your tutoring sessions and progress here.'}
-              </p>
             </div>
 
-            {/* Stats */}
-            <div className="flex flex-col gap-2 shrink-0">
-              {stats.map(s => (
-                <div key={s.label} className={`flex items-center gap-3 ${s.bg} rounded-2xl px-4 py-2.5 min-w-[150px]`}>
-                  <div className={`w-8 h-8 rounded-xl ${s.icon_bg} ${s.color} flex items-center justify-center shadow-sm shrink-0`}>
-                    {s.icon}
-                  </div>
-                  <div>
-                    <p className="text-xl font-extrabold text-slate-800 leading-none">{s.value}</p>
-                    <p className="text-[10.5px] text-slate-400 font-semibold mt-0.5">{s.label}</p>
-                  </div>
+            {/* Edit Button */}
+            <button className="shrink-0 px-5 py-2.5 rounded-2xl bg-lime-300 text-green-900 font-bold text-[13px] hover:bg-lime-400 transition-colors">
+              Edit Profile
+            </button>
+          </div>
+
+          {/* Stats Row */}
+          <div className="relative z-10 mt-8 pt-6 border-t border-green-800/50 grid grid-cols-3 gap-4">
+            {stats.map(s => (
+              <div key={s.label} className="text-center">
+                <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${s.bg} ${s.color} mb-2 border ${s.border}`}>
+                  <s.icon size={18} />
                 </div>
-              ))}
-            </div>
+                <p className="text-2xl font-extrabold text-white leading-none">{s.value}</p>
+                <p className="text-[11px] text-green-500 font-semibold mt-1">{s.label}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* ── TABS ── */}
-        <div className="flex gap-2 mb-5">
-          {['sessions', 'my tutors'].map(tab => (
+        {/* ═══════ TABS ═══════ */}
+        <div className="flex gap-2">
+          {[
+            { id: 'sessions', label: 'My Sessions', icon: BookOpen },
+            { id: 'tutors', label: 'My Tutors', icon: GraduationCap },
+            { id: 'progress', label: 'Progress', icon: TrendingUp },
+          ].map(tab => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 rounded-full text-[12.5px] font-bold capitalize cursor-pointer transition-all ${
-                activeTab === tab
-                  ? 'bg-blue-400 text-white shadow-[0_3px_10px_rgba(96,165,250,0.3)]'
-                  : 'bg-white text-slate-400 hover:text-slate-600 shadow-sm'
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all ${
+                activeTab === tab.id
+                  ? 'bg-lime-300 text-green-900 border-[1.5px] border-lime-400'
+                  : 'bg-white text-green-600 border-[1.5px] border-green-100 hover:border-green-300'
               }`}
             >
-              {tab}
+              <tab.icon size={15} />
+              {tab.label}
             </button>
           ))}
         </div>
 
-        {/* ── SESSIONS ── */}
+        {/* ═══════ CONTENT ═══════ */}
         {activeTab === 'sessions' && (
           loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-60 rounded-2xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 animate-pulse" />
-              ))}
+            <div className="flex items-center justify-center py-20">
+              <Loader2 size={28} className="text-green-400 animate-spin" />
             </div>
           ) : bookings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-300">
-              <BookOpen size={44} className="mb-3 opacity-40" />
-              <p className="font-bold text-base text-slate-400">No sessions yet</p>
-              <p className="text-xs mt-1">Book a tutor to get started</p>
+            <div className="bg-white border-[1.5px] border-green-100 rounded-3xl p-12 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+                <BookOpen size={28} className="text-green-300" />
+              </div>
+              <h3 className="text-lg font-bold text-green-900 mb-1">No sessions yet</h3>
+              <p className="text-sm text-green-400 mb-4">Book a tutor to start your learning journey</p>
+              <Link href="/tutors" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-lime-300 text-green-900 font-bold text-sm hover:bg-lime-400 transition-colors">
+                Find Tutors <ChevronRight size={14} />
+              </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {bookings.map(b => <BookingCard key={b._id} booking={b} />)}
             </div>
           )
         )}
 
-        {activeTab === 'my tutors' && (
-          <p className="text-slate-400 text-sm font-semibold">Not implemented yet.</p>
+        {activeTab === 'tutors' && (
+          <div className="bg-white border-[1.5px] border-green-100 rounded-3xl p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+              <GraduationCap size={28} className="text-green-300" />
+            </div>
+            <h3 className="text-lg font-bold text-green-900 mb-1">Coming Soon</h3>
+            <p className="text-sm text-green-400">Your favorite tutors will appear here</p>
+          </div>
         )}
+
+        {activeTab === 'progress' && (
+          <div className="bg-white border-[1.5px] border-green-100 rounded-3xl p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+              <TrendingUp size={28} className="text-green-300" />
+            </div>
+            <h3 className="text-lg font-bold text-green-900 mb-1">Coming Soon</h3>
+            <p className="text-sm text-green-400">Track your learning progress over time</p>
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
 
 function BookingCard({ booking }) {
-  const confirmed = booking.status === 'Confirmed';
+  const statusColors = {
+    Confirmed: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-400' },
+    Pending:   { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200',  dot: 'bg-amber-400' },
+    Cancelled: { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200',    dot: 'bg-red-400' },
+  };
+  const s = statusColors[booking?.status] || statusColors.Pending;
 
   return (
-    <div
-                    key={booking._id}
-                    className="group bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-                >
-                    {/* Top Content */}
-                    <div>
-                        {/* Tutor Info */}
-                        <div className="flex items-start gap-4">
-                            <img
-                                src={
-                                    booking?.tutorImage ||
-                                    "https://i.ibb.co/4pDNDk1/avatar.png"
-                                }
-                                alt={booking?.tutorName || "Tutor"}
-                                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 bg-slate-100 shrink-0"
-                            />
+    <div className="group bg-white border-[1.5px] border-green-100 rounded-3xl p-5 hover:border-lime-300 hover:shadow-lg hover:shadow-lime-100/50 transition-all duration-300">
+      {/* Header */}
+      <div className="flex items-start gap-4 mb-4">
+        <img
+          src={booking?.tutorImage || ""}
+          alt={booking?.tutorName || "Tutor"}
+          className="w-14 h-14 rounded-2xl object-cover border border-green-100 shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-base font-bold text-green-900 truncate">
+              {booking?.tutorName || "Unknown Tutor"}
+            </h3>
+            <span className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+              {booking?.status || "Pending"}
+            </span>
+          </div>
+          <p className="text-sm text-green-600 font-medium mt-0.5">
+            {booking?.subject || "No Subject"}
+          </p>
+        </div>
+      </div>
 
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2">
-                                    <div className="min-w-0">
-                                        <h3 className="text-base font-bold text-slate-900 truncate">
-                                            {booking?.tutorName || "Unknown Tutor"}
-                                        </h3>
-
-                                        <p className="text-sm text-slate-600 truncate mt-1">
-                                            {booking?.subject || "No Subject"}
-                                        </p>
-                                    </div>
-
-                                    <span
-                                        className={`shrink-0 text-[11px] font-semibold px-3 py-1 rounded-full border ${
-                                            booking?.status === "Confirmed"
-                                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                                                : booking?.status === "Pending"
-                                                ? "bg-amber-50 text-amber-700 border-amber-100"
-                                                : "bg-red-50 text-red-700 border-red-100"
-                                        }`}
-                                    >
-                                        {booking?.status || "Pending"}
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center gap-1 mt-2 text-xs text-slate-400">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
-
-                                    <span className="truncate">
-                                        {booking?.location || "Location unavailable"}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Info Section */}
-                        <div className="mt-5 space-y-3 bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-slate-500">
-                                    Teaching Setup
-                                </span>
-
-                                <span className="text-sm font-semibold text-slate-800 text-right">
-                                    {booking?.teachingMethod || "N/A"}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-slate-500">
-                                    Reserved Slots
-                                </span>
-
-                                <span className="text-sm font-semibold text-slate-800">
-                                    1 Slot
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-slate-500">
-                                    Hourly Rate
-                                </span>
-
-                                <span className="text-sm font-bold text-slate-900">
-                                    {booking?.hourlyFee || 0} BDT/hr
-                                </span>
-                            </div>
-
-                            <div className="flex items-start justify-between gap-3">
-                                <span className="text-sm text-slate-500 shrink-0">
-                                    Transaction Date
-                                </span>
-
-                                <span className="text-xs text-slate-600 text-right break-words">
-                                    {booking?.bookedAt
-                                        ? new Date(
-                                              booking.bookedAt
-                                          ).toLocaleString()
-                                        : "N/A"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+      {/* Details */}
+      <div className="space-y-2.5 bg-green-50 rounded-2xl p-4 border border-green-100">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-xs font-semibold text-green-500">
+            <Calendar size={13} /> Date
+          </span>
+          <span className="text-xs font-bold text-green-800">
+            {booking?.bookedAt
+              ? new Date(booking.bookedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              : "N/A"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-xs font-semibold text-green-500">
+            <Clock size={13} /> Time
+          </span>
+          <span className="text-xs font-bold text-green-800">
+            {booking?.bookedAt
+              ? new Date(booking.bookedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+              : "N/A"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-xs font-semibold text-green-500">
+            <MapPin size={13} /> Mode
+          </span>
+          <span className="text-xs font-bold text-green-800">
+            {booking?.teachingMethod || "N/A"}
+          </span>
+        </div>
+        <div className="pt-2 border-t border-green-200 flex items-center justify-between">
+          <span className="text-xs font-semibold text-green-500">Rate</span>
+          <span className="text-sm font-extrabold text-green-900">
+            ৳{booking?.hourlyFee || 0}<span className="text-green-500 font-medium text-xs">/hr</span>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }

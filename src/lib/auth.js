@@ -2,13 +2,18 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { jwt } from "better-auth/plugins" 
+import { sendEmail } from "./email";
+import { VerificationEmail } from "@/emails/VerificationEmails";
+
 
 const client = new MongoClient(process.env.MONGODB_URI);
-const db = client.db('mediqueue');
+const url = process.env.BETTER_AUTH_URL || "http://localhost:3000"; 
+const db = client.db('edu-flex');
 
 export const auth = betterAuth({
-   trustedOrigins: ['http://localhost:3000'],
+   trustedOrigins: [url],
    emailAndPassword: {    
+    requireEmailVerification: true,
         enabled: true
     } ,
     socialProviders: {
@@ -21,6 +26,28 @@ export const auth = betterAuth({
     
     client
   }),
+
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "student",
+        required: true,
+        input: true, 
+      },
+    },
+  },
+
+  emailVerification: {
+    sendVerificationEmail: async ( { user, url, token }, request) => {
+      void sendEmail({
+       to: user.email,
+        subject: "Verify your email address",
+        react: <VerificationEmail verificationUrl={url} />
+      });
+    },
+  },
+
   session:{
     cookieCache:{
       enabled: true,
