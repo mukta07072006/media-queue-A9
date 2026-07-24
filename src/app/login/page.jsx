@@ -3,25 +3,39 @@
 import React, { useEffect, useState } from 'react';
 import { Parkinsans } from 'next/font/google';
 import { Highlight } from '@/components/reusablecomp/Highlight';
-import { Mail, Lock, ArrowRight, LogIn, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, LogIn, Sparkles, CircleCheck } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { redirect } from 'next/navigation';
+import { redirect, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FcGoogle } from 'react-icons/fc';
 import { useRouter } from 'next/navigation';
 import { TextShimmer } from '@/components/ui/text-shimmer';
+import toast from 'react-hot-toast';
 
 const parkinsans = Parkinsans({ subsets: ['latin'], display: 'swap' });
 
 export default function Login() {
 
+   const searchParams = useSearchParams();
   const { data: session, isPending } = authClient.useSession();
     const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fromEmailVerification, setFromEmailVerification] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+
+
+ 
+
+  useEffect(() => {
+    if (searchParams.get("verified") === "true") {
+      setFromEmailVerification(true);
+   
+      window.history.replaceState(null, '', '/login');
+    }
+  }, [searchParams]);
 
 
   useEffect(() => {
@@ -134,6 +148,14 @@ export default function Login() {
                 <p className={`${parkinsans.className} text-sm text-green-400 mt-1`}>
                   Enter your credentials to access your account.
                 </p>
+              </div>
+
+              <div className="space-y-4">
+                  {fromEmailVerification && (
+                  <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                    Your email has been successfully verified! Please log in to continue. <CircleCheck />
+                  </div>
+                  )}
               </div>
 
               {/* Fields */}

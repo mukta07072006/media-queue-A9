@@ -60,6 +60,7 @@ export default function SignupPage() {
       password: form.password,
       name: form.name,
       role: 'student',
+      callbackURL: "/login?verified=true",
     });
 
     if (error) {
@@ -114,14 +115,6 @@ export default function SignupPage() {
               <RefreshCw className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
               Resend verification email
             </button>
-
-            <Link
-              href="/login"
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium text-white text-green-900 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 rounded-xl transition-colors duration-200 shadow-sm"
-            >
-              Proceed to Login
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </div>

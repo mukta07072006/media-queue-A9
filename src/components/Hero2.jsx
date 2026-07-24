@@ -64,7 +64,7 @@ const checkAuth = ()=>{
         ">
             
            
-            <div className='px-5'>
+            <div className='px-5 flex items-center flex-col justify-center'>
                 <h1 className={`${parkinsans.className} text-black text-5xl mt-6 md:text-8xl font-semibold text-center`}>
                 Find Your Perfect <br />
                 <Highlight>Tutor</Highlight>  
@@ -82,7 +82,7 @@ const checkAuth = ()=>{
             />
 
             <div className='mt-10 max-w-[90vw] md:max-w-full flex gap-5'>
-            <button  className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Book a Tutor <div
+            <button onClick={()=>redirect("/tutors")} className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Book a Tutor <div
             className='h-8 w-8 bg-lime-300 rounded-full flex justify-center items-center p-2'>
                 <ArrowRight
             size={25}

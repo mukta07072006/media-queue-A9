@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Parkinsans } from 'next/font/google';
 import { authClient } from '@/lib/auth-client';
-import { Menu, X, User, LogOut, PlusCircle, Users, Calendar, ChevronDown, ArrowRight } from 'lucide-react';
+import { Menu, X, User, LogOut, PlusCircle, Users, Calendar, ChevronDown, ArrowRight,Heart,Presentation,House,Info } from 'lucide-react';
 
 const parkinsans = Parkinsans({
   subsets: ['latin'],
@@ -17,13 +17,16 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending , refetch} = authClient.useSession();
   const user = session?.user;
+  const role = session?.user?.role;
+  console.log("User role:", role);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = async (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+        
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -36,20 +39,23 @@ const Navbar = () => {
   };
 
   const publicLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Tutors', href: '/tutors' },
-    { name: 'About Us', href: '/about' },
+    { name: 'Home', href: '/', icon: House },
+    { name: 'Tutors', href: '/tutors', icon: Presentation },
+    { name: 'About Us', href: '/about', icon: Info },
   ];
 
-  const privateLinks = [
-    { name: 'Dashboard', href: '/dashboard', icon: Users },
+  const teacherLinks = [
+    { name: 'Dashboard', href: 'teachers/dashboard', icon: Users },
+  ];
+  const studentLinks = [
     { name: 'My Booked Sessions', href: '/my-booked-sessions', icon: Calendar },
+    { name: 'Favorites', href: '/favorites', icon:  Heart},
   ];
 
   const isActive = (path) => pathname === path;
 
   // Links shown in center: always public + private if logged in
-  const centerLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
+  const centerLinks = user && role === "teacher" ? [...publicLinks, ...teacherLinks] : user && role === "student" ? [...publicLinks, ...studentLinks] : publicLinks;
 
   return (
     <nav className={`${parkinsans.className} bg-white border-b border-green-100 sticky top-0 z-50`}>
@@ -70,13 +76,13 @@ const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`${parkinsans.className} px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                className={`${parkinsans.className} px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${
                   isActive(link.href)
                     ? 'bg-lime-300 text-green-900'
                     : 'text-green-800 hover:bg-green-50'
                 }`}
               >
-                {link.name}
+                {link.name}{link.icon && <link.icon size={16} className="opacity-60" />}
               </Link>
             ))}
           </div>
@@ -192,10 +198,10 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {user && (
+          {user && role === "teacher" ? 
             <>
               <div className="my-2 border-t border-green-100" />
-              {privateLinks.map((link) => {
+              {teacherLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
@@ -222,7 +228,29 @@ const Navbar = () => {
                 Sign Out
               </button>
             </>
-          )}
+           : user && role === "student" ? (
+            <>
+              <div className="my-2 border-t border-green-100" />
+              {studentLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`${parkinsans.className} flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
+                      isActive(link.href)
+                        ? 'bg-lime-300 text-green-900'
+                        : 'text-green-800 hover:bg-green-50'
+                    }`}
+                  >
+                    <Icon size={16} className="opacity-60" />
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </>
+          ) : null}
 
           {!user && !isPending && (
             <div className="pt-3 grid grid-cols-2 gap-3 border-t border-green-100 mt-2">
