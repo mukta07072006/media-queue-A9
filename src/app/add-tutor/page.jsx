@@ -45,9 +45,7 @@ export default function AddTutorPage() {
             setError('You must be logged in to add a tutor profile.');
             return;
         }
-
         const {data:tokenData} =await authClient.token();
-        console.log(tokenData.token)
 
         setLoading(true);
         setError('');

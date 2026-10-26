@@ -5,7 +5,48 @@ import Link from 'next/link';
 import { Parkinsans } from 'next/font/google';
 import { ArrowRight, MapPin, Clock, Star, Search, CalendarDays, X } from 'lucide-react';
 import { API_URL } from '@/lib/api';
+import { BookOpen, Wallet } from 'lucide-react'; // add to your existing lucide import
 
+const COVER_PALETTES = [
+  ['#d9f99d', '#4ade80', '#0f766e', '#facc15'],
+  ['#fde68a', '#fb923c', '#e11d48', '#f9a8d4'],
+  ['#a5f3fc', '#38bdf8', '#4f46e5', '#a7f3d0'],
+  ['#fbcfe8', '#c084fc', '#6d28d9', '#fde68a'],
+  ['#bbf7d0', '#22d3ee', '#1d4ed8', '#d9f99d'],
+  ['#fed7aa', '#f472b6', '#7c3aed', '#fef08a'],
+];
+
+function coverStyle(seed) {
+  let h = 2166136261;
+  for (const ch of String(seed)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  h >>>= 0;
+  const [a, b, c, d] = COVER_PALETTES[(h >>> 8) % COVER_PALETTES.length];
+  const at = (s) => (h >>> s) % 100;
+  return {
+    backgroundImage: [
+      `radial-gradient(circle at ${at(0)}% ${at(5)}%, ${d} 0%, transparent 45%)`,
+      `radial-gradient(circle at ${at(10)}% ${at(15)}%, ${c} 0%, transparent 55%)`,
+      `radial-gradient(circle at ${at(20)}% ${at(25)}%, ${b} 0%, transparent 60%)`,
+      `linear-gradient(${(h >>> 3) % 360}deg, ${a}, ${b})`,
+    ].join(','),
+  };
+}
+
+function getDuration(start, end) {
+  if (!start || !end) return { value: '—', unit: 'Duration' };
+  const days = Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+  if (!Number.isFinite(days) || days < 1) return { value: '—', unit: 'Duration' };
+  if (days >= 60) return { value: Math.round(days / 30), unit: 'Months' };
+  return { value: days, unit: days === 1 ? 'Day' : 'Days' };
+}
+
+function dateRange(start, end) {
+  const f = (d, y) =>
+    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(y && { year: 'numeric' }) });
+  if (start && end) return `${f(start)} – ${f(end, true)}`;
+  if (start) return `From ${f(start, true)}`;
+  return `Until ${f(end, true)}`;
+}
 const parkinsans = Parkinsans({ subsets: ['latin'], display: 'swap' });
 
 const AllTutorsPage = () => {
@@ -43,9 +84,7 @@ const AllTutorsPage = () => {
     const delay = setTimeout(fetchTutors, 300);
     return () => clearTimeout(delay);
   }, [search, startDate, endDate]);
-
   const hasFilters = search || startDate || endDate;
-  console.log(tutors)
   return (
     <main className={`${parkinsans.className} min-h-screen bg-green-50 py-12`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -157,119 +196,113 @@ const AllTutorsPage = () => {
           </div>
 
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
             {tutors.map((tutor) => {
+              const duration = getDuration(tutor.sessionStartDate, tutor.sessionEndDate);
               const isAvailable = tutor.sessionStartDate
                 ? new Date(tutor.sessionStartDate) <= new Date()
                 : true;
 
               return (
                 <div
-                  key={tutor._id}
-                  className="group bg-white rounded-3xl border-[1.5px] border-green-100 hover:border-lime-400 transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden"
-                >
-                  {/* Card top */}
-                  <div className="p-5 flex flex-col items-center text-center border-b border-green-50">
-                    {/* Avatar */}
-                    <div className="relative mb-3">
-                      {tutor.tutorImage ? (
-                        <img
-                          src={tutor.tutorImage}
-                          alt={tutor.tutorName}
-                          className="w-16 h-16 rounded-2xl object-cover border-2 border-green-100 group-hover:border-lime-300 transition-colors"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-2xl bg-lime-100 text-green-800 flex items-center justify-center text-2xl font-bold border-2 border-green-100">
-                          {tutor.tutorName?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      {/* Availability dot */}
-                      <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${isAvailable ? 'bg-lime-400' : 'bg-slate-300'}`} />
-                    </div>
+  key={tutor._id}
+  className={`${parkinsans.className} group flex flex-col rounded-[2rem] bg-white p-2.5 shadow-[0_10px_30px_-12px_rgba(20,83,45,0.25)] ring-1 ring-green-900/5 transition-transform duration-300 hover:-translate-y-1`}
+>
+  {/* Cover + avatar + subject pill */}
+  <div className="relative">
+    <div className="h-32 rounded-3xl" style={coverStyle(tutor._id ?? tutor.tutorName)} />
 
-                    {/* Availability badge */}
-                    <span className={`${parkinsans.className} inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-2 ${
-                      isAvailable
-                        ? 'bg-lime-100 text-green-700 border border-lime-300'
-                        : 'bg-slate-100 text-slate-500 border border-slate-200'
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-slate-400'}`} />
-                      {isAvailable ? 'Available' : 'Unavailable'}
-                    </span>
+    <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-green-900 backdrop-blur">
+      <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-slate-400'}`} />
+      {isAvailable ? 'Available' : 'Unavailable'}
+    </span>
 
-                    <h3 className={`${parkinsans.className} font-bold text-green-900 text-base leading-tight`}>
-                      {tutor.tutorName}
-                    </h3>
-                    <p className={`${parkinsans.className} text-xs text-green-500 mt-0.5 font-semibold`}>
-                      {tutor.subject || 'Academic Mentor'}
-                    </p>
-                  </div>
+    <div className="absolute bottom-0 left-4 translate-y-1/2">
+      {tutor.tutorImage ? (
+        <img
+          src={tutor.tutorImage}
+          alt={tutor.tutorName}
+          className="h-[68px] w-[68px] rounded-full bg-lime-100 object-cover ring-[5px] ring-white"
+        />
+      ) : (
+        <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-lime-100 text-2xl font-bold text-green-800 ring-[5px] ring-white">
+          {tutor.tutorName?.charAt(0).toUpperCase()}
+        </div>
+      )}
+    </div>
 
-                  {/* Card meta */}
-                  <div className="px-5 py-4 space-y-2.5 flex-1">
-                    {tutor.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin size={13} className="text-green-400 shrink-0" />
-                        <span className={`${parkinsans.className} text-xs text-green-700`}>{tutor.location}</span>
-                      </div>
-                    )}
-                    {tutor.sessionStartDate && (
-                      <div className="flex items-center gap-2">
-                        <CalendarDays size={13} className="text-green-400 shrink-0" />
-                        <span className={`${parkinsans.className} text-xs text-green-700`}>
-                          From{' '}
-                          <span className="font-semibold text-green-900">
-                            {new Date(tutor.sessionStartDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        </span>
-                      </div>
-                    )}
-                    {tutor.sessionEndDate && (
-                      <div className="flex items-center gap-2">
-                        <Clock size={13} className="text-green-400 shrink-0" />
-                        <span className={`${parkinsans.className} text-xs text-green-700`}>
-                          Until{' '}
-                          <span className="font-semibold text-green-900">
-                            {new Date(tutor.sessionEndDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        </span>
-                      </div>
-                    )}
-                    {tutor.hourlyRate && (
-                      <div className="flex items-center justify-between pt-1">
-                        <span className={`${parkinsans.className} text-xs text-green-600`}>Rate</span>
-                        <span className={`${parkinsans.className} text-sm font-bold text-green-900`}>
-                          ${tutor.hourlyRate}<span className="text-xs font-normal text-green-500">/hr</span>
-                        </span>
-                      </div>
-                    )}
-                    {tutor.rating && (
-                      <div className="flex items-center gap-1 pt-0.5">
-                        {[1,2,3,4,5].map((s) => (
-                          <Star
-                            key={s}
-                            size={11}
-                            className={s <= Math.round(tutor.rating) ? 'text-lime-500 fill-lime-400' : 'text-green-200 fill-green-100'}
-                          />
-                        ))}
-                        <span className={`${parkinsans.className} text-xs text-green-600 ml-1`}>{tutor.rating}</span>
-                      </div>
-                    )}
-                  </div>
+    <span className="absolute bottom-0 right-3 inline-flex max-w-[58%] translate-y-1/2 items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-bold text-green-950 shadow-[0_4px_14px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
+      <BookOpen size={16} className="shrink-0 text-lime-600" />
+      <span className="truncate">{tutor.subject || 'Academic Mentor'}</span>
+    </span>
+  </div>
 
-                  {/* CTA */}
-                  <div className="px-5 pb-5">
-                    <Link
-                      href={`/tutors/${tutor._id}`}
-                      className={`${parkinsans.className} w-full inline-flex items-center justify-between gap-2 px-4 py-2.5 text-sm font-bold text-green-900 bg-lime-300 hover:bg-lime-400 rounded-2xl transition-all duration-200`}
-                    >
-                      Book a Session
-                      <div className="w-6 h-6 rounded-full bg-green-900 flex items-center justify-center">
-                        <ArrowRight size={13} className="text-lime-300" />
-                      </div>
-                    </Link>
-                  </div>
-                </div>
+  {/* Name + location */}
+  <div className="px-3 pt-11">
+    <h3 className="truncate text-lg font-bold leading-tight text-green-950">{tutor.tutorName}</h3>
+    {tutor.location && (
+      <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-slate-400">
+        <MapPin size={13} className="shrink-0" />
+        <span className="truncate">{tutor.location}</span>
+      </p>
+    )}
+  </div>
+
+  {/* Stats */}
+  <div className="mt-5 grid grid-cols-3 gap-2 px-3">
+    <div className="flex min-w-0 items-start gap-2">
+      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white">
+        <Star size={11} className="fill-white" />
+      </span>
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-sm font-bold text-green-950">
+          {tutor.rating ? Number(tutor.rating).toFixed(1) : '—'}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">Rating</p>
+      </div>
+    </div>
+
+    <div className="flex min-w-0 items-start gap-2">
+      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white">
+        <Wallet size={11} />
+      </span>
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-sm font-bold text-green-950">
+          {tutor.hourlyRate ? `$${tutor.hourlyRate}` : '—'}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">per hour</p>
+      </div>
+    </div>
+
+    <div className="flex min-w-0 items-start gap-2">
+      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-purple-500 text-white">
+        <Clock size={11} />
+      </span>
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-sm font-bold text-green-950">{duration.value}</p>
+        <p className="mt-1 text-xs text-slate-400">{duration.unit}</p>
+      </div>
+    </div>
+  </div>
+
+  {/* Session dates */}
+  {(tutor.sessionStartDate || tutor.sessionEndDate) && (
+    <p className="mx-3 mt-4 flex items-center gap-1.5 text-xs text-slate-400">
+      <CalendarDays size={13} className="shrink-0" />
+      {dateRange(tutor.sessionStartDate, tutor.sessionEndDate)}
+    </p>
+  )}
+
+  {/* CTA */}
+  <div className="mt-auto pt-5">
+    <Link
+      href={`/tutors/${tutor._id}`}
+      className="block w-full rounded-2xl border border-green-100 bg-gradient-to-b from-white to-green-50 py-3.5 text-center text-sm font-bold text-green-950 transition-colors hover:border-lime-300 hover:from-lime-50 hover:to-lime-100"
+    >
+      Book a Session
+    </Link>
+  </div>
+</div>
               );
             })}
           </div>

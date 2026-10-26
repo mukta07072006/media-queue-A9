@@ -230,7 +230,6 @@ export default function BecomeTutorPage() {
           const data = await res.json();
           if (data?.status) {
             setApplicationStatus(data.status);
-            // console.log(data.status)
           }
         }
       } catch {
@@ -287,8 +286,6 @@ export default function BecomeTutorPage() {
       setLoading(false);
     }
   };
-
-  // console.log(applicationStatus)
 
   if (isPending || checkingStatus) {
     return (

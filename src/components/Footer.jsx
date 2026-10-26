@@ -15,8 +15,6 @@ const Footer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    console.log('Subscribed email:', formData.get('email'));
     e.currentTarget.reset();
   };
 

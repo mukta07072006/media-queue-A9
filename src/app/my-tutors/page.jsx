@@ -12,9 +12,7 @@ export default function MyTutorsPage() {
 
 
     const { data: session, isPending, error } = authClient.useSession();
-
     const { user } = session || {};
-    console.log(user?.id)
 
 
     const [myTutors, setMyTutors] = useState([]);
@@ -31,18 +29,13 @@ export default function MyTutorsPage() {
             const response = await fetch(`${API_URL}/api/tutors/mine?userId=${user?.id}`);
             const data = await response.json();
             setMyTutors(data);
-            console.log(myTutors)
         }
         catch(error){
             toast.error('Error fetching my tutors:', error);
         }
     }
-    console.log(myTutors)
     myTutorsData();
 }, [user?.id]);  
-
-
-    console.log(myTutors._id)
 
 
     const deleteTutor = async (tutorId) => {
@@ -102,7 +95,6 @@ export default function MyTutorsPage() {
 
 
 const handleUpdateProfile = (tutor) => {
-    console.log("from update " , tutor)
     setEditingTutor(tutor); 
 };
 
@@ -115,7 +107,6 @@ const handleUpdateSuccess = (updatedTutor) => {
     );
 };
 
-console.log(myTutors)
      
 
     return (

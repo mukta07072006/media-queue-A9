@@ -32,7 +32,7 @@ export default function Login() {
   useEffect(() => {
     if (searchParams.get("verified") === "true") {
       setFromEmailVerification(true);
-   
+
       window.history.replaceState(null, '', '/login');
     }
   }, [searchParams]);

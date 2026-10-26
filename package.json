@@ -10,6 +10,7 @@
     "email": "email dev"
   },
   "dependencies": {
+    "@better-auth/infra": "^0.4.22",
     "@better-auth/mongo-adapter": "^1.6.11",
     "@gsap/react": "^2.1.2",
     "@heroui/react": "^3.0.5",

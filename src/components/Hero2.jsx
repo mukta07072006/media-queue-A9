@@ -66,13 +66,12 @@ const checkAuth = ()=>{
            
             <div className='px-5 flex items-center flex-col justify-center'>
                 <h1 className={`${parkinsans.className} text-black text-5xl mt-6 md:text-8xl font-semibold text-center`}>
-                Find Your Perfect <br />
-                <Highlight>Tutor</Highlight>  
-               Today
+                Stuck on a Topic? <br />
+                <Highlight>Get Help Now</Highlight>
             </h1>
             <p className={`text-black text-lg mt-6 text-center max-w-md md:max-w-xl ${parkinsans.className}`}>
-                Join <span className='text-green-700 font-bold'> 10,000+ </span>
-                     students connecting with expert tutors and achieving their learning goals faster.
+                Connect with expert tutors <span className='text-[#185536] font-bold'>instantly</span> — 
+                book single-topic sessions, get help in 5 minutes, pay only for what you need.
             </p>
             </div>
         <AvatarCircles
@@ -81,6 +80,7 @@ const checkAuth = ()=>{
             className={`mt-10 ${parkinsans.className}`}
             />
 
+           
             <div className='mt-10 max-w-[90vw] md:max-w-full flex gap-5'>
             <button onClick={()=>redirect("/tutors")} className={`px-5 justify-between py-2 items-center cursor-pointer bg-emerald-600 flex gap-8 hover:gap-10 transition-all text-white font-semibold rounded-full ${parkinsans.className}`}>Book a Tutor <div
             className='h-8 w-8 bg-lime-300 rounded-full flex justify-center items-center p-2'>

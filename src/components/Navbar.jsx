@@ -20,7 +20,6 @@ const Navbar = () => {
   const { data: session, isPending , refetch} = authClient.useSession();
   const user = session?.user;
   const role = session?.user?.role;
-  console.log("User role:", role);
 
   useEffect(() => {
     const handleClickOutside = async (event) => {

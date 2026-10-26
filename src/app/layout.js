@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Media Queue || Home",
+  title: "EduFlex || Home",
   description: "Developed by Muktadir",
 };
 
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-white flex flex-col">
+      <body className="min-h-full bg-green-50 flex flex-col">
         <Navbar />
         <Toaster />
         {children}
