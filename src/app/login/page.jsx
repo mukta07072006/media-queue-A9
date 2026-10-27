@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Parkinsans } from 'next/font/google';
 import { Highlight } from '@/components/reusablecomp/Highlight';
 import { Mail, Lock, ArrowRight, LogIn, Sparkles, CircleCheck } from 'lucide-react';
@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 const parkinsans = Parkinsans({ subsets: ['latin'], display: 'swap' });
 
-export default function Login() {
+function LoginContent() {
 
    const searchParams = useSearchParams();
   const { data: session, isPending } = authClient.useSession();
@@ -52,7 +52,7 @@ export default function Login() {
         </div>
       );
     }
-  
+
     if (session) {
       return null; 
     }
@@ -245,5 +245,19 @@ export default function Login() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense
+      fallback={
+        <div className={`${parkinsans.className} min-h-screen flex items-center justify-center`}>
+          <TextShimmer>Loading login...</TextShimmer>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
