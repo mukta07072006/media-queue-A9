@@ -1,11 +1,18 @@
-// app/api/send-verification/route.ts
-import { Resend } from 'resend';
 import { VerificationEmail } from '@/emails/VerificationEmails';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResendClient } from '@/lib/email';
 
 export async function POST(req: Request) {
   const { email, verificationUrl } = await req.json();
+  let resend;
+  try {
+    resend = getResendClient();
+  } catch (error) {
+    console.error("Email service configuration error:", error);
+    return Response.json(
+      { error: "Email service is not configured" },
+      { status: 500 },
+    );
+  }
 
   const { data, error } = await resend.emails.send({
     from: 'EduFlex <auth@skillzlab.online>', 
