@@ -1,134 +1,122 @@
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient, ObjectId } from "mongodb";
+import { getApiSession, isAdminSession } from "@/lib/api-auth";
+import {
+  applyCreditScoreChange,
+  isCreditScoreAction,
+} from "@/lib/credit-score";
 
 const client = new MongoClient(process.env.MONGODB_URI);
-const db = client.db('edu-flex');
+const db = client.db("edu-flex");
 
-// GET - Get teacher credit score
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const teacherId = searchParams.get('teacherId');
+    const authSession = await getApiSession(request);
+    if (!authSession) {
+      return Response.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    }
 
-    if (!teacherId) {
-      return Response.json({ error: 'Teacher ID required' }, { status: 400 });
+    const { searchParams } = new URL(request.url);
+    const requestedTeacherId = searchParams.get("teacherId");
+    const teacherId = authSession.user.id;
+
+    if (
+      requestedTeacherId &&
+      requestedTeacherId !== teacherId &&
+      !isAdminSession(authSession)
+    ) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (!ObjectId.isValid(requestedTeacherId || teacherId)) {
+      return Response.json({ error: "Invalid teacher ID" }, { status: 400 });
     }
 
     await client.connect();
-    const usersCollection = db.collection('users');
-
-    const user = await usersCollection.findOne(
-      { _id: new ObjectId(teacherId) },
-      { projection: { creditScore: 1, name: 1 } }
+    const user = await db.collection("users").findOne(
+      {
+        _id: new ObjectId(
+          requestedTeacherId && isAdminSession(authSession)
+            ? requestedTeacherId
+            : teacherId,
+        ),
+      },
+      { projection: { creditScore: 1 } },
     );
 
     if (!user) {
-      return Response.json({ error: 'Teacher not found' }, { status: 404 });
+      return Response.json({ error: "Teacher not found" }, { status: 404 });
     }
 
     return Response.json({
-      score: user.creditScore?.score || 100,
-      history: user.creditScore?.history || []
+      score: user.creditScore?.score ?? 100,
+      history: user.creditScore?.history || [],
     });
   } catch (error) {
-    console.error('Error fetching credit score:', error);
-    return Response.json({ error: 'Failed to fetch credit score' }, { status: 500 });
+    console.error("Error fetching credit score:", error);
+    return Response.json(
+      { error: "Failed to fetch credit score" },
+      { status: 500 },
+    );
   } finally {
     await client.close();
   }
 }
 
-// POST - Update credit score
 export async function POST(request) {
   try {
+    const authSession = await getApiSession(request);
+    if (!authSession) {
+      return Response.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    }
+    if (!isAdminSession(authSession)) {
+      return Response.json(
+        { error: "Administrator access required" },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
     const { teacherId, action, sessionId, reason } = body;
 
-    if (!teacherId || !action) {
-      return Response.json({ error: 'Teacher ID and action required' }, { status: 400 });
+    if (!teacherId || !ObjectId.isValid(teacherId) || !action) {
+      return Response.json(
+        { error: "A valid teacherId and action are required" },
+        { status: 400 },
+      );
     }
-
-    // Define score changes
-    const scoreChanges = {
-      on_time: 2,
-      late: -5,
-      no_show: -20,
-      dispute_won: 5,
-      dispute_lost: -10,
-      session_completed: 1,
-      session_cancelled: -3
-    };
-
-    if (!scoreChanges[action]) {
-      return Response.json({ error: 'Invalid action' }, { status: 400 });
+    if (!isCreditScoreAction(action)) {
+      return Response.json({ error: "Invalid action" }, { status: 400 });
+    }
+    if (sessionId && !ObjectId.isValid(sessionId)) {
+      return Response.json({ error: "Invalid session ID" }, { status: 400 });
     }
 
     await client.connect();
-    const usersCollection = db.collection('users');
-
-    // Get current score
-    const user = await usersCollection.findOne(
-      { _id: new ObjectId(teacherId) },
-      { projection: { creditScore: 1 } }
-    );
-
-    if (!user) {
-      return Response.json({ error: 'Teacher not found' }, { status: 404 });
-    }
-
-    const currentScore = user.creditScore?.score || 100;
-    const scoreChange = scoreChanges[action];
-    const newScore = Math.max(0, Math.min(100, currentScore + scoreChange));
-
-    // Create history entry
-    const historyEntry = {
-      sessionId: sessionId ? new ObjectId(sessionId) : null,
+    const result = await applyCreditScoreChange({
+      usersCollection: db.collection("users"),
+      teachersCollection: db.collection("teachers"),
+      teacherId,
       action,
-      scoreChange,
-      newScore,
-      timestamp: new Date(),
-      reason: reason || `Score change due to ${action}`
-    };
+      sessionId,
+      reason,
+    });
 
-    // Update score
-    await usersCollection.updateOne(
-      { _id: new ObjectId(teacherId) },
-      {
-        $set: {
-          'creditScore.score': newScore
-        },
-        $push: {
-          'creditScore.history': historyEntry
-        },
-        $setOnInsert: {
-          creditScore: {
-            score: newScore,
-            history: [historyEntry]
-          }
-        }
-      },
-      { upsert: true }
-    );
-
-    // Check if score is low and update teacher status
-    if (newScore < 50) {
-      await db.collection('teachers').updateOne(
-        { userId: new ObjectId(teacherId) },
-        { $set: { status: 'suspended' } }
-      );
-    } else if (newScore < 70) {
-      // Warning status could be handled separately
+    if (!result) {
+      return Response.json({ error: "Teacher not found" }, { status: 404 });
     }
 
-    return Response.json({
-      success: true,
-      previousScore: currentScore,
-      newScore,
-      scoreChange,
-      status: newScore < 50 ? 'suspended' : newScore < 70 ? 'warning' : 'good'
-    });
+    return Response.json({ success: true, ...result });
   } catch (error) {
-    console.error('Error updating credit score:', error);
-    return Response.json({ error: 'Failed to update credit score' }, { status: 500 });
+    console.error("Error updating credit score:", error);
+    return Response.json(
+      { error: "Failed to update credit score" },
+      { status: 500 },
+    );
   } finally {
     await client.close();
   }
